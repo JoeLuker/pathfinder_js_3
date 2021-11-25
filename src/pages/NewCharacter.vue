@@ -1,75 +1,145 @@
 <template>
-
-  <q-page class="q-pa-md">
-    <q-form class="q-gutter-md" style="min-width: 300px; max-width: 375px"
-            ref="myForm" @submit.prevent.stop="onSubmit"
+  <q-page style="padding: 2.55vmin">
+    <q-form ref="myForm" @submit.prevent.stop="onSubmit"
             @reset.prevent.stop="onReset">
 
-      <q-input filled name="name" v-model="name"
-               label="Name *"/>
+      <q-stepper v-model="step"
+                 ref="stepper"
+                 contracted
+                 color="primary"
+                 animated
+                 header-nav
+                 style="min-width: 300px; max-width: 8.5in;"
+      >
+        <q-step
+                :name="1"
+                title="Choose a Name"
+                icon="settings"
+                :done="step > 1"
+                :header-nav="step > 1"
 
-      <q-select filled name="class" v-model="charClass" :options="classRef"
-                label="Class *"/>
+        >
+          <q-input filled name="name" v-model="name"
+                   label="Name *"/>
+        </q-step>
+        <q-step class="q-gutter-md"
+                :name="2"
+                title="Choose a Class"
+                icon="settings"
+                :done="step > 2"
+                :header-nav="step > 2"
 
-      <q-select filled name="heritage" v-model="heritage" :options="heritageNames"
-                label="Heritage *"/>
+        >
+          <q-select filled name="class" v-model="charClass" :options="classRef"
+                    label="Class *"/>
+          <q-select filled name="archetype" v-model="archetype" :options="classRef"
+                    label="Archetype *"/>
+        </q-step>
+        <q-step class="q-gutter-sm"
+                :name="3"
+                title="Choose a Heritage & Determine Ability Scores"
+                icon="settings"
+                :done="step > 3"
+                :header-nav="step > 3"
 
-      <q-list dense>
-        <q-item v-for="(score, name, index) in pointBuy" :key="index">
-          <q-item-section style="max-width: 80px">
-            <q-badge class="text-capitalize" color="primary">
-              {{ name }}
-            </q-badge>
-          </q-item-section>
-          <q-item-section>
-            <q-slider
-            :name="pointBuy[index]"
-            v-model="pointBuy[name]"
-            :min="7"
-            :max="18"
-            :step="1"
-            class="test-slider"
-            snap
-            label
-            />
-          </q-item-section>
-          <q-radio v-if="radioToggle" style="max-width: 80px" :val="name"
-                   v-model="radioRef"/>
-          <q-item v-else>{{ heritageBonus[name] }}</q-item>
-        </q-item>
-        <q-item>
-          <q-slider
-            v-model="pointsSpent"
-            :color="pointsSpentColor"
-            readonly
-            label
-            :label-value="pointsSpent"
-            :min="-12"
-            :max="25"
-          />
-        </q-item>
-      </q-list>
+        >
 
-      <q-list class="row">
-        <q-item v-for="(score, name, index) in abilityScores" :key="index">
-          <q-item-section>
-            <q-item-label class="text-capitalize" center overline>
-              {{ name.substring(0, 3) }}
-            </q-item-label>
-            {{ score }}
-          </q-item-section>
-        </q-item>
-      </q-list>
+          <q-select filled name="heritage" v-model="heritage" :options="heritageNames"
+                    label="Heritage *"/>
 
-      <q-toggle v-model="accept" label="I accept these choices"/>
+          <q-list dense>
+            <q-item>
+              <q-item-section>
+                <q-select dense item-aligned v-model="pointBuyChoice"
+                          :options="Object.keys(pointBuyOptions)" label="Point Buy"/>
+              </q-item-section>
+            </q-item>
 
-      <div>
-        <q-btn label="Submit" type="submit" color="primary"/>
-        <q-btn label="Reset" type="reset" color="primary" flat charClass="q-ml-sm"/>
-      </div>
+            <q-item v-for="(score, name, index) in pointBuy" :key="index">
+              <q-item-section style="max-width: 80px">
+                <q-badge class="text-capitalize" color="primary">
+                  {{ name }}
+                </q-badge>
+              </q-item-section>
+              <q-item-section>
+                <q-slider
+                  :name="pointBuy[index]"
+                  v-model="pointBuy[name]"
+                  :min="7"
+                  :max="sliderMax[name]"
+                  :step="1"
+                  :class="`${name.substring(0, 3)}-slider`"
+                  :style="cssVars"
+                  :markers="1"
+                  snap
+                  label
+                />
+              </q-item-section>
+              <q-radio v-if="radioToggle" style="max-width: 80px" :val="name"
+                       v-model="radioRef"/>
+              <q-item v-else>{{ heritageBonus[name] }}</q-item>
+            </q-item>
 
+            <q-item>
+              <q-item-section>
+                <q-linear-progress
+                  :value="pointsSpent/ pointBuyOptions[pointBuyChoice]"
+                  :color="pointsSpentColor"
+                  readonly
+                  :min="-12"
+                  :max="pointBuyOptions[pointBuyChoice]"
+                />
+              </q-item-section>
+              <q-item>{{ pointsSpent }}/ {{ pointBuyOptions[pointBuyChoice] }}</q-item>
+            </q-item>
+            <q-list class="row dense justify-center">
+              <div v-for="(score, name, index) in abilityScores" :key="index">
+                <q-item class="ability">
+                  <q-item-section>
+                    <q-item-label class="text-capitalize score-title">
+                      {{ name.substring(0, 3) }}
+                    </q-item-label>
+                    <h4>{{ score }}</h4>
+                  </q-item-section>
+                </q-item>
+                <q-item class="ability">
+                  <q-item-section>
+                    <h6>{{ formatBonus(abilityMods[name]) }}</h6>
+                  </q-item-section>
+                </q-item>
+              </div>
+            </q-list>
+          </q-list>
+
+          <q-btn label="Reset" type="reset" style="background:rgba(162,96,44,0.25) ;
+          color: white" color="primary" back flat charClass="q-ml-sm"/>
+
+        </q-step>
+        <q-step
+          :name="4"
+          title="Create an ad group"
+          caption="Optional"
+          icon="create_new_folder"
+          :done="step > 4"
+          :header-nav="step > 4"
+
+        >
+          <q-toggle v-model="accept" label="I accept these choices"/>
+
+          <div>
+            <q-btn label="Submit" type="submit" color="primary"/>
+          </div>
+        </q-step>
+        <template v-slot:navigation>
+          <q-stepper-navigation>
+            <q-btn @click="$refs.stepper.next()" color="primary"
+                   :label="step === 4 ? 'Finish' : 'Continue'"/>
+            <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()"
+                   label="Back" class="q-ml-sm"/>
+          </q-stepper-navigation>
+        </template>
+      </q-stepper>
     </q-form>
-
     <div class="q-pa-md">
       <q-ajax-bar
         ref="bar"
@@ -78,6 +148,7 @@
         size="10px"
       />
     </div>
+
   </q-page>
 </template>
 
@@ -100,6 +171,58 @@ export default {
     const accept = ref(false);
     const myForm = ref(null);
 
+    const pointBuyTable = {
+      3: -15,
+      4: -12,
+      5: -9,
+      6: -6,
+      7: -4,
+      8: -2,
+      9: -1,
+      10: 0,
+      11: 1,
+      12: 2,
+      13: 3,
+      14: 5,
+      15: 7,
+      16: 10,
+      17: 13,
+      18: 17,
+    };
+
+    const reversePointBuyTable = {
+      '-4': 7,
+      '-3': 7,
+      '-2': 8,
+      '-1': 9,
+      0: 10,
+      1: 11,
+      2: 12,
+      3: 13,
+      4: 13,
+      5: 14,
+      6: 14,
+      7: 15,
+      8: 15,
+      9: 15,
+      10: 16,
+      11: 16,
+      12: 16,
+      13: 17,
+      14: 17,
+      15: 17,
+      16: 17,
+      17: 18,
+    };
+
+    const pointBuyOptions = reactive({
+      'Low: 10': 10,
+      'Standard Low: 15': 15,
+      'Standard High: 20': 20,
+      'Epic: 25': 25,
+    });
+
+    const pointBuyChoice = ref('Standard High: 20');
     const pointBuy = reactive({
       strength: 10,
       dexterity: 10,
@@ -139,16 +262,12 @@ export default {
       let pointSum = 0;
       Object.keys(pointBuy)
         .forEach((key) => {
-          if (pointBuy[key] > 10) {
-            pointSum += Math.round(((pointBuy[key] - 10) ** 2) / 4) + 1;
-          } else if (pointBuy[key] < 10) {
-            pointSum += Math.round(((pointBuy[key] - 10) ** 2) / 4) * -1;
-          }
+          pointSum += pointBuyTable[pointBuy[key]];
         });
       return pointSum;
     });
 
-    const pointsSpentColor = computed(() => (pointsSpent.value > 25 ? 'red' : 'brown-10'));
+    const pointsSpentColor = computed(() => (pointsSpent.value > pointBuyOptions[pointBuyChoice.value] ? 'red' : 'brown-10'));
 
     const heritageRef = reactive({});
     const heritageNames = ref(null);
@@ -203,7 +322,23 @@ export default {
       return holder;
     });
 
-    const sliderMax = computed(() => 25 - pointsSpent.value);
+    const abilityMods = computed(() => {
+      const holder = reactive({});
+      abilityScoreNames.forEach((ability) => {
+        holder[ability] = Math.floor((Number(abilityScores.value[ability]) - 10) / 2);
+      });
+      return holder;
+    });
+
+    const sliderMax = computed(() => {
+      const holder = reactive({});
+      abilityScoreNames.forEach((ability) => {
+        holder[ability] = reversePointBuyTable[(pointBuyOptions[pointBuyChoice.value]
+          - pointsSpent.value)
+        + Number(pointBuyTable[pointBuy[ability]])] ?? 18;
+      });
+      return holder;
+    });
 
     function pushData() {
       api.post('/character', {
@@ -226,8 +361,30 @@ export default {
         });
     }
 
+    const cssVars = computed(() => (
+      {
+        '--str-width': `${Math.max(0, (sliderMax.value.strength - 7) / 0.11)}%`,
+        '--dex-width': `${Math.max(0, (sliderMax.value.dexterity - 7) / 0.11)}%`,
+        '--con-width': `${Math.max(0, (sliderMax.value.constitution - 7) / 0.11)}%`,
+        '--int-width': `${Math.max(0, (sliderMax.value.intelligence - 7) / 0.11)}%`,
+        '--wis-width': `${Math.max(0, (sliderMax.value.wisdom - 7) / 0.11)}%`,
+        '--cha-width': `${Math.max(0, (sliderMax.value.charisma - 7) / 0.11)}%`,
+      }
+    ));
+
+    function formatBonus(bonus) {
+      let text = '';
+      if (bonus < 0) {
+        text = bonus;
+      } else {
+        text = `+${bonus}`;
+      }
+      return text;
+    }
+
     return {
       $q,
+      step: ref(1),
 
       name,
       charClass,
@@ -241,16 +398,21 @@ export default {
       accept,
 
       pointBuy,
+      pointBuyOptions,
+      pointBuyChoice,
       pointsSpent,
       pointsSpentColor,
 
       abilityScores,
       heritageBonus,
+      abilityMods,
 
       radioToggle,
       radioRef,
 
       sliderMax,
+      cssVars,
+      formatBonus,
 
       onSubmit() {
         if (accept.value === true) {
@@ -277,9 +439,47 @@ export default {
   },
 };
 </script>
+
 <style lang="scss">
 
-.test-slider {
-  width: (100%/11*11);
+.str-slider {
+  width: var(--str-width);
 }
+
+.dex-slider {
+  width: var(--dex-width);
+}
+
+.con-slider {
+  width: var(--con-width);
+}
+
+.int-slider {
+  width: var(--int-width);
+}
+
+.wis-slider {
+  width: var(--wis-width);
+}
+
+.cha-slider {
+  width: var(--cha-width);
+}
+
+.score-title {
+  size: 1rem;
+  line-height: 1.75rem;
+  letter-spacing: .16667em;
+  weight: 400;
+}
+
+h4, h6 {
+  margin: 0;
+  padding: 0;
+}
+
+.ability {
+  padding: 0 min(17px, 2vw) ;
+}
+
 </style>
