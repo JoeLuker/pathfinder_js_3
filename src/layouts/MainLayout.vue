@@ -53,6 +53,11 @@ const linksList = [
     link: '/#/NewCharacter',
   },
   {
+    title: 'Test Character',
+    icon: 'school',
+    link: '/#/TestCharacter',
+  },
+  {
     title: 'Three',
     caption: 'github.com/quasarframework',
     icon: 'code',
