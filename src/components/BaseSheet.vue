@@ -7,13 +7,14 @@
 
         <div>
           <div id="name" class="capitalize" v-text="character.introduction.name"></div>
-          <div id="cr" v-text="introduction.cr()"></div>
+          <div id="cr" v-text="cr"></div>
         </div>
 
-        <div id="xp" v-text="introduction.xp()"></div>
+        <div id="xp" v-text="xp"></div>
 
         <div>
           <span id="race" class="capitalize" v-text="character.introduction.race"/>
+          <span v-text="'&nbsp;'"/>
           <span id="class" class="capitalize">
             {{ formatList(character.introduction.class[0], ['name']) }}
 
@@ -26,9 +27,11 @@
 
         <div>
           <span id="alignment" v-text="character.introduction.alignment"/>
+          <span v-text="'&nbsp;'"/>
           <span id="size" class="capitalize">
             {{ character.introduction.size }}
           </span>
+          <span v-text="'&nbsp;'"/>
           <span id="type">
            {{ character.introduction.type }}
           </span>
@@ -39,10 +42,10 @@
         </div>
 
         <div>
-          <b>Init </b><span id="initiative" v-text="formatBonus(introduction.initiative())"></span>
+          <b>Init </b><span id="initiative" v-text="formatBonus(initiative)"></span>
           <b> Senses </b>
           <!--          <span id="senses" v-text="formatList(character.introduction.senses)"/>-->
-          <span id="senses">Perception {{ formatBonus(skills.skills.perception) }}</span>
+          <!-- <span id="senses">Perception {{ formatBonus(skills.skills.perception) }}</span>-->
 
         </div>
 
@@ -56,34 +59,34 @@
         <hr>
 
         <div id="ac">
-          <b>AC</b> <span> {{ defense.ac() }}</span>
+          <b>AC</b> <span> {{ ac }}</span>
         </div>
         <div id="hp">
-          <b>hp </b> <span>{{ defense.currHP() }}/{{ defense.maxHP() }}</span>
+          <b>hp </b> <span>{{ currHP }}/{{ maxHP }}</span>
         </div>
         <div id="saving throws">
-          <b>Fort </b> <span id="fortitude" v-text="defense.savingThrows().fort"/>
-          <b>, Ref </b> <span id="reflex" v-text="defense.savingThrows().ref"/>
-          <b>, Will </b> <span id="will" v-text="defense.savingThrows().will"/>
+          <b>Fort </b> <span id="fortitude" v-text="savingThrows.fort"/>
+          <b>, Ref </b> <span id="reflex" v-text="savingThrows.ref"/>
+          <b>, Will </b> <span id="will" v-text="savingThrows.will"/>
         </div>
         <div>
 
-          <div id="defensive abilities" v-text="character.defense.defensiveAbilities"></div>
+          <div id="defensive abilities" v-text="character.defensiveAbilities"></div>
           <div id="dr">
             <b>DR</b>
-            <span v-for="(drValue, drType, index) in character.defense.dr" :key="index">
+            <span v-for="(drValue, drType, index) in character.dr" :key="index">
               {{ drValue }}/{{ drType }}
             </span>
           </div>
-          <div id="immune" v-text="character.defense.immune"></div>
-          <div id="resist" v-text="character.defense.resist"></div>
-          <div id="sr" v-text="character.defense.sr"></div>
+          <div id="immune" v-text="character.immune"></div>
+          <div id="resist" v-text="character.resist"></div>
+          <div id="sr" v-text="character.sr"></div>
 
         </div>
         <div id="weaknesses">
           <b>Weaknesses</b>
           <span class="capitalize">
-          {{ formatArray(character.defense.weaknesses) }}
+          {{ formatArray(character.weaknesses) }}
           </span>
         </div>
 
@@ -121,7 +124,7 @@
         <div id="supernaturalAbilities">
           <b @click="SupernaturalToggle = !SupernaturalToggle"> Supernatural Abilities </b>
 
-          <span v-show="!SupernaturalToggle">...</span>
+          <span v-show="!SupernaturalToggle">..</span>
 
           <!--TODO-->
           <span v-show="SupernaturalToggle">
@@ -141,17 +144,17 @@
         <div id="extraordinaryAbilities">
           <b @click="ExtraordinaryToggle = !ExtraordinaryToggle"> Extraordinary Abilities </b>
 
-          <span v-show="!ExtraordinaryToggle">...</span>
+          <span v-show="!ExtraordinaryToggle">..</span>
 
           <!--TODO-->
           <span v-show="ExtraordinaryToggle">
 
-                      <span v-for="(attack, index) in character.offense.extraordinaryAbilities"
-                            :key="index"
-                            class="special-attacks capitalize">
+             <span v-for="(attack, index) in character.offense.extraordinaryAbilities"
+                   :key="index"
+                   class="special-attacks capitalize">
          {{ formatSpecial(attack) }}<span
-                        v-if="index !== character.offense.extraordinaryAbilities.length - 1"
-                      >, </span>
+               v-if="index !== character.offense.extraordinaryAbilities.length - 1"
+             >, </span>
           </span>
 
           </span>
@@ -161,7 +164,7 @@
         <!--          <b @click="ExtraordinaryToggle = !ExtraordinaryToggle"
         > Extraordinary Abilities </b>-->
 
-        <!--          <span v-show="!ExtraordinaryToggle">...</span>-->
+        <!--          <span v-show="!ExtraordinaryToggle">..</span>-->
 
         <!--          <span v-show="ExtraordinaryToggle">-->
 
@@ -183,10 +186,11 @@
           <!--            <SpellList v-bind:caster="character.introduction.class[index]"
           @changeSpell="changeSpell"/>-->
           <!--          </div>-->
-          <div v-for="(caster, index) in character.introduction.class[0].gestalt" :key="index">
-            <SpellList v-bind:caster="character.introduction.class[0].gestalt[index]"
-                       @changeSpell="changeSpell"/>
-          </div>
+<!--          <div v-for="(caster, index)-->
+<!--          in character.introduction.class[0].gestalt" :key="index">-->
+<!--           <SpellList v-bind:caster="character.introduction.class[0].gestalt[index]"-->
+<!--                    @changeSpell="changeSpell"/>-->
+<!--          </div>-->
 
         </div>
 
@@ -230,7 +234,7 @@
           <b @click="featToggle = !featToggle">Feats </b>
           <span v-if="featToggle" id="feats" class="capitalize"
                 v-text="formatArray(character.statistics.feats)"/>
-          <span v-else>...</span>
+          <span v-else>..</span>
         </div>
         <div>
           <b @click="skillToggle = !skillToggle"> Skills </b>
@@ -238,7 +242,7 @@
             <span class="capitalize">
                 <span v-if="summarySkillToggle">
                   <span class="capitalize">
-                    {{ formatSkills(skills.skills) }}
+                    {{ formatSkills(skills.tempSkills) }}
                   </span>
                 </span>
                 <span v-if="!summarySkillToggle">
@@ -246,17 +250,17 @@
                     {{ formatSkills(skills.summarySkills) }}
                   </span>
                 </span>
-              <div>
+              <span>
 
                 <i v-if="!summarySkillToggle"
-                   @click="summarySkillToggle = true"> Show More Skills...</i>
+                   @click="summarySkillToggle = true"> Show More Skills..</i>
                 <i v-if="summarySkillToggle"
-                   @click="summarySkillToggle = false"> Show Fewer Skills...</i>
+                   @click="summarySkillToggle = false"> Show Fewer Skills..</i>
 
-                </div>
+                </span>
           </span>
           </span>
-          <span v-if="!skillToggle">...</span>
+          <span v-if="!skillToggle">..</span>
         </div>
         <div id="languages" v-text="character.statistics.languages"></div>
         <div id="sq" v-text="character.statistics.specialQualities"></div>
@@ -302,25 +306,25 @@
         </div>
       </div>
 
-      <div v-if="abilityName" class="info">
+<!--      <div v-if="abilityName" class="info">-->
 
-        <Info
-          v-bind:table="'ability'"
-          v-bind:name="this.abilityName"
-          @closeInfo="changeInfo"
-        />
+<!--&lt;!&ndash;        <Info&ndash;&gt;-->
+<!--&lt;!&ndash;          v-bind:table="'ability'"&ndash;&gt;-->
+<!--&lt;!&ndash;          v-bind:name="abilityName"&ndash;&gt;-->
+<!--&lt;!&ndash;          @closeInfo="changeInfo"&ndash;&gt;-->
+<!--&lt;!&ndash;        />&ndash;&gt;-->
 
-      </div>
+<!--      </div>-->
 
-      <div v-if="spellName" class="spellDesc">
+<!--      <div v-if="spellName" class="spellDesc">-->
 
-        <FullText
-          v-bind:table="'spell'"
-          v-bind:name="this.spellName"
-          @closeSpell="changeInfo"
-        />
+<!--        <FullText-->
+<!--          v-bind:table="'spell'"-->
+<!--          v-bind:name="spellName"-->
+<!--          @closeSpell="changeInfo"-->
+<!--        />-->
 
-      </div>
+<!--      </div>-->
 
     </div>
 
@@ -389,7 +393,7 @@ const toggle = reactive({
 
 });
 
-const spellName = ref('');
+// const spellName = ref('');
 const summarySkillToggle = ref(false);
 const skillToggle = ref(true);
 const featToggle = ref(false);
@@ -399,274 +403,27 @@ const ExtraordinaryToggle = ref(true);
 const SupernaturalToggle = ref(true);
 // const specialQualitiesToggle = ref(false);
 // const defensiveAbilitiesToggle = ref(true);
-const abilityName = ref('');
+// const abilityName = ref('');
 
 // eslint-disable-next-line no-unused-vars
 const props = defineProps({
   character: Object,
 });
 
-// INTRODUCTION
-
 const toggleKeys = Object.keys(toggle);
-
-// const cr = ref('');
-// const xp = ref(null);
-// const level = computed(() => {
-// return props.character.introduction.class.reduce((accumulator, cur) => {
-// return accumulator + cur.level, 0
-// })
-// });
-
-// const initiative = computed(() => abilityMods.value.dexterity);
-
-// const sizeModifier = computed(() => {
-//   let tempSize = props.character.introduction.sizeMod;
-//
-//   toggleKeys.forEach((button) => {
-//     if ((typeof toggle[button].bonus !== 'undefined')
-//     && 'size' in toggle[button].bonus && toggle[button].active) {
-//       tempSize += toggle[button].bonus.size;
-//     }
-//   });
-//
-//   return tempSize;
-// });
-
-// DEFENSE
-
-// const charLevel = this.introduction.level();
-// const ac = computed(() => {
-//   const abp = {
-//     armorEnhancement: 2,
-//     deflection: 2,
-//     naturalArmorEnhancement: 2,
-//   };
-//
-//   const abpKeys = Object.keys(abp);
-//
-//   let tempAC = 10;
-//
-//   abpKeys.forEach((key) => {
-//     tempAC += abp[key];
-//   });
-//
-//   tempAC += abilityMods.value.dexterity + intro.sizeModifier();
-//
-//   const toggleKeys = Object.keys(toggle);
-//   const gearKeys = Object.keys(props.character.gear);
-//
-//   toggleKeys.forEach((button) => {
-//     if ('bonus' in toggle[button] && 'ac' in toggle[button].bonus && toggle[button].active) {
-//       if ('bonusType' in toggle[button] && toggle[button].bonusType in abp) {
-//         tempAC += Math.max(
-//           toggle[button].bonus.ac - abp[toggle[button].bonusType],
-//           abp[toggle[button].bonusType] - toggle[button].bonus.ac,
-//         );
-//       } else {
-//         tempAC += toggle[button].bonus.ac;
-//       }
-//     }
-//   });
-//
-//   gearKeys.forEach((item) => {
-//     if (
-//       typeof props.character.gear[item] === 'object'
-//       && 'bonus' in props.character.gear[item]
-//       && 'ac' in props.character.gear[item].bonus
-//     ) {
-//       tempAC += props.character.gear[item].bonus.ac;
-//     }
-//   });
-//
-//   return tempAC;
-// });
-// const maxHP = computed(() => {
-//   let hitPoints = 0;
-//
-//   let maxHitDie = 0;
-//
-//   const CharClasses = props.character.introduction.class;
-//
-//   CharClasses.forEach((charClass) => {
-//     if (charClass.name !== 'gestalt') {
-//       if (charClass.first) {
-//         hitPoints += charClass.hitDie;
-//         hitPoints += (charClass.level - 1) * Math.ceil((charClass.hitDie + 1) / 2);
-//       } else {
-//         hitPoints += charClass.level * Math.ceil((charClass.hitDie + 1) / 2);
-//       }
-//       if (typeof charClass.favored !== 'undefined') {
-//         if (typeof charClass.favored.hp !== 'undefined') {
-//           hitPoints += charClass.favored.hp;
-//         }
-//       }
-//     } else {
-//       charClass.gestalt.forEach((gestaltClass) => {
-//         maxHitDie = Math.max(gestaltClass.hitDie, maxHitDie);
-//       });
-//     }
-//   });
-//
-//   if (props.character.introduction.solo) {
-//     hitPoints = maxHitDie * charLevel;
-//   }
-//
-//   hitPoints += charLevel * abilityMods.value.constitution;
-//
-//   return hitPoints;
-// });
-// const currHP = computed(() => this.maxHP());
-// const savingThrows = computed(() => {
-//   const totalSaves = {
-//     fort: 0,
-//     ref: 0,
-//     will: 0,
-//   };
-//
-//   const resistanceBonus = 4;
-//
-//   let toggleBonus = 0;
-//
-//   const toggleKeys = Object.keys(toggle);
-//
-//   toggleKeys.forEach((button) => {
-//     if ((typeof toggle[button].bonus !== 'undefined')
-//     && 'saves' in toggle[button].bonus && toggle[button].active) {
-//       toggleBonus += toggle[button].bonus.saves;
-//     }
-//   });
-//
-//   toggleKeys.forEach((button) => {
-//     if ((typeof toggle[button].bonus !== 'undefined')
-//     && 'ref' in toggle[button].bonus && toggle[button].active) {
-//       totalSaves.ref += toggle[button].bonus.ref;
-//     }
-//   });
-//
-//   const saveKeys = Object.keys(props.character.defense.saveAbilityScore);
-//
-//   saveKeys.forEach((save) => {
-//     totalSaves[save] += abilityMods[props.character.defense.saveAbilityScore[save]];
-//     if (
-//       props.character.introduction.class[0].gestalt[0].saves[save]
-//       || props.character.introduction.class[0].gestalt[1].saves[save]
-//     ) {
-//       totalSaves[save] += 2;
-//       totalSaves[save] += Math.floor(props.character.introduction.class[0].level / 2);
-//     } else {
-//       totalSaves[save] += Math.floor(props.character.introduction.class[0].level / 3);
-//     }
-//
-//     totalSaves[save] += resistanceBonus + toggleBonus;
-//   });
-//   return totalSaves;
-// });
-
-// OFFENSE
-
-// const speed = computed(() => this.character.offense.speed);
-
-const melee = computed(() => {
-  let twoHanding = 0;
-
-  if (toggle['two handing'].active) twoHanding = 1;
-
-  let tempAttack = Math.max(this.abilityMods.dexterity, this.abilityMods.strength) + this.baseAtk
-    + this.character.introduction.sizeMod;
-  let tempDamage = Math.floor(this.abilityMods.strength * (1 + (0.5 * twoHanding)));
-
-  let tempDexDamage = Math.floor(this.abilityMods.dexterity);
-
-  if (toggle['power attack'].active) {
-    tempAttack += -(Math.floor(this.baseAtk / 4) + 1);
-    // eslint-disable-next-line no-unused-vars
-    tempDamage += (Math.floor(this.baseAtk / 4) + 1) * (2 + twoHanding);
-    tempDexDamage += (Math.floor(this.baseAtk / 4) + 1) * 2;
-  }
-
-  const dieSizeMod = this.introduction.sizeModifier();
-
-  let holy = '';
-
-  if (toggle.holy.active) {
-    holy = ' plus 2d6';
+function formatBonus(bonus) {
+  let text;
+  if (bonus < 0) {
+    text = bonus;
   } else {
-    holy = '';
+    text = `+${bonus}`;
   }
-
-  toggleKeys.forEach((button) => {
-    if ((typeof toggle[button].bonus !== 'undefined') && 'weaponDamage' in toggle[button].bonus && toggle[button].active) {
-      tempDexDamage += toggle[button].bonus.weaponDamage;
-      tempDamage += toggle[button].bonus.weaponDamage;
-    }
-    if ((typeof toggle[button].bonus !== 'undefined') && 'attackRolls' in toggle[button].bonus && toggle[button].active) {
-      tempAttack += toggle[button].bonus.attackRolls;
-    }
-  });
-
-  const option = {
-    name: 'Stella\'s Holy Cutlass',
-    attack: tempAttack + 2,
-    dieCount: 1,
-    dieSize: 6 - dieSizeMod,
-    damage: tempDexDamage + 2,
-    critRange: 15,
-  };
-
-  return `${option.name} ${this.formatBonus(option.attack)} \
-      (${option.dieCount}d${option.dieSize}${this.formatBonus(option.damage)}/${option.critRange}-20${holy})`;
-});
-const ranged = computed(() => {
-  let tempAttack = Math.max(this.abilityMods.dexterity, this.abilityMods.strength) + this.baseAtk
-    + this.character.introduction.sizeMod;
-  let tempDamage = this.abilityMods.strength;
-
-  if (toggle['power attack'].active) {
-    tempAttack += -(Math.floor(this.baseAtk / 4) + 1);
-    tempDamage += (Math.floor(this.baseAtk / 4) + 1) * 2;
-  }
-
-  const dieSizeMod = this.introduction.sizeModifier();
-
-  toggleKeys.forEach((button) => {
-    if ((typeof toggle[button].bonus !== 'undefined') && 'weaponDamage' in toggle[button].bonus && toggle[button].active) {
-      tempDamage += toggle[button].bonus.weaponDamage;
-    }
-    if ((typeof toggle[button].bonus !== 'undefined') && 'attackRolls' in toggle[button].bonus && toggle[button].active) {
-      tempAttack += toggle[button].bonus.attackRolls;
-    }
-  });
-
-  const option = {
-    name: 'Furies\' Flaming Burst Longbow',
-    attack: tempAttack + 2,
-    dieCount: 1,
-    dieSize: 8 - dieSizeMod,
-    damage: tempDamage + 2,
-    critRange: 20,
-  };
-
-  return `${option.name} ${this.formatBonus(option.attack)} \
-      (${option.dieCount}d${option.dieSize}${this.formatBonus(option.damage)})`;
-});
-
-const space = computed(() => '5');
-
-const reach = computed(() => '5');
-
-// const specialAttacks = computed(() => ({
-//   maxReservoir: Math.floor(this.character.introduction.class[0].level / 2) + 3,
-//   currResevoir: Math.floor(this.character.introduction.class[0].level / 2) + 3,
-// }));
-
-// TACTICS
+  return text;
+}
 
 // STATISTICS
 
 const abilityScores = computed(() => {
-  const tempAbilityScores = { ...this.character.statistics.abilityScore };
-
   const husk = {
     strength: 0,
     dexterity: 0,
@@ -676,28 +433,34 @@ const abilityScores = computed(() => {
     charisma: 0,
   };
 
-  const keys = Object.keys(tempAbilityScores);
+  const keys = Object.keys(props.character.statistics.abilityScore);
 
   keys.forEach((score) => {
-    const subKeys = Object.keys(tempAbilityScores[score]);
+    const subKeys = Object.keys(props.character.statistics.abilityScore[score]);
     subKeys.forEach((subScore) => {
-      husk[score] += tempAbilityScores[score][subScore];
+      husk[score] += props.character.statistics.abilityScore[score][subScore];
     });
   });
 
   return husk;
 });
-
 const abilityMods = computed(() => {
-  const filledArray = { ...this.abilityScores };
-
-  const keys = Object.keys(this.abilityScores);
-
-  keys.forEach((score) => {
-    filledArray[score] = Math.floor((filledArray[score] - 10) / 2);
+  const husk = reactive({
+    strength: 0,
+    dexterity: 0,
+    constitution: 0,
+    intelligence: 0,
+    wisdom: 0,
+    charisma: 0,
   });
 
-  return filledArray;
+  const keys = Object.keys(husk);
+
+  keys.forEach((score) => {
+    husk[score] = Math.floor((abilityScores.value[score] - 10) / 2);
+  });
+
+  return husk;
 });
 
 const baseAtk = computed(() => {
@@ -705,7 +468,7 @@ const baseAtk = computed(() => {
 
   let maxBAB = 0;
 
-  const CharClasses = this.character.introduction.class;
+  const CharClasses = props.character.introduction.class;
 
   CharClasses.forEach((charClass) => {
     if (charClass.name !== 'gestalt') {
@@ -723,7 +486,7 @@ const baseAtk = computed(() => {
 });
 
 const cmb = computed(() => {
-  let tempCMB = this.abilityMods.strength + this.baseAtk - this.character.introduction.sizeMod;
+  let tempCMB = abilityMods.value.strength + baseAtk.value - props.character.introduction.sizeMod;
 
   toggleKeys.forEach((button) => {
     if ((typeof toggle[button].bonus !== 'undefined')
@@ -735,12 +498,14 @@ const cmb = computed(() => {
 
   return tempCMB;
 });
-const cmd = computed(() => 10 + this.abilityMods.dexterity
-  + this.abilityMods.strength + this.baseAtk
-  - this.character.introduction.sizeMod);
+const cmd = computed(() => 10 + abilityMods.value.dexterity
+  + abilityMods.value.strength + baseAtk.value
+  - props.character.introduction.sizeMod);
+// eslint-disable-next-line max-len
+const level = computed(() => props.character.introduction.class.reduce(((accumulator, cur) => accumulator + cur.level), 0));
 
 const skills = computed(() => {
-  const skillRanks = { ...this.character.statistics.skills };
+  const skillRanks = props.character.statistics.skills;
 
   const tempSkills = {
     acrobatics: 0,
@@ -782,16 +547,16 @@ const skills = computed(() => {
     'use magic device': 0,
   };
 
-  if (this.character.introduction.sizeMod !== 0) {
-    tempSkills.fly += (Math.log2(this.character.introduction.sizeMod) + 1) * 2;
-    tempSkills.stealth += (Math.log2(this.character.introduction.sizeMod) + 1) * 4;
+  if (props.character.introduction.sizeMod !== 0) {
+    tempSkills.fly += (Math.log2(props.character.introduction.sizeMod) + 1) * 2;
+    tempSkills.stealth += (Math.log2(props.character.introduction.sizeMod) + 1) * 4;
   }
-  const classSkills = [...this.character.introduction.class[0].gestalt[0].classSkills];
+  const classSkills = [
+    props.character.introduction.class[0].gestalt[0].classSkills,
+    props.character.introduction.class[0].gestalt[1].classSkills,
+  ];
 
-  Array.prototype.push.apply(classSkills,
-    [...this.character.introduction.class[0].gestalt[1].classSkills]);
-
-  const knowledge = { ...this.character.statistics.skills.knowledge };
+  const { knowledge } = props.character.statistics.skills;
 
   const knowledgeKeys = Object.keys(knowledge);
 
@@ -816,52 +581,284 @@ const skills = computed(() => {
       knowledgeKeys.forEach((knowledgeSkillKey) => {
         tempSkills.knowledge[knowledgeSkillKey] += skillRanks.knowledge[knowledgeSkillKey].ranks;
         tempSkills.knowledge[knowledgeSkillKey]
-          += this.abilityMods[skillRanks.knowledge[knowledgeSkillKey].ability];
+          += abilityMods.value[skillRanks.knowledge[knowledgeSkillKey].ability];
         toggleKeys.forEach((button) => {
           if ((typeof toggle[button].bonus !== 'undefined') && 'skills' in toggle[button].bonus && toggle[button].active) {
             tempSkills.knowledge[knowledgeSkillKey] += toggle[button].bonus.skills;
           }
         });
-        if (this.character.specialAbilities.abilities.includes('Bardic Knowledge')) {
-          tempSkills.knowledge[knowledgeSkillKey] += this.introduction.level();
+        if (props.character.specialAbilities.abilities.includes('Bardic Knowledge')) {
+          tempSkills.knowledge[knowledgeSkillKey] += level.value;
         }
-        if (skillRanks.knowledge[knowledgeSkillKey].ranks >= 1 || this.character.specialAbilities.abilities.includes('Bardic Knowledge')) {
+        if (skillRanks.knowledge[knowledgeSkillKey].ranks >= 1 || props.character.specialAbilities.abilities.includes('Bardic Knowledge')) {
           summarySkills.knowledge[knowledgeSkillKey] = tempSkills.knowledge[knowledgeSkillKey];
         }
       });
     } else {
       tempSkills[skillKey] += skillRanks[skillKey].ranks;
-      tempSkills[skillKey] += this.abilityMods[skillRanks[skillKey].ability];
-      tempSkills[skillKey]
-        // eslint-disable-next-line no-sequences
-        += skillRanks[skillKey].modifier.reduce((accumulator, cur) => (accumulator + cur.bonus, 0));
+      tempSkills[skillKey] += abilityMods.value[skillRanks[skillKey].ability];
+      // eslint-disable-next-line max-len
+      tempSkills[skillKey] += skillRanks[skillKey].modifier.reduce((accumulator, cur) => (accumulator + cur.bonus), 0);
       toggleKeys.forEach((button) => {
         if ((typeof toggle[button].bonus !== 'undefined') && 'skills' in toggle[button].bonus && toggle[button].active) {
-          skills[skillKey] += toggle[button].bonus.skills;
+          tempSkills[skillKey] += toggle[button].bonus.skills;
         }
       });
 
       if (skillRanks[skillKey].ranks >= 1) {
-        summarySkills[skillKey] = skills[skillKey];
+        summarySkills[skillKey] = tempSkills[skillKey];
       }
     }
   });
 
   return {
-    skills,
+    tempSkills,
     summarySkills,
   };
 });
 
-function formatBonus(bonus) {
-  let text = '';
-  if (bonus < 0) {
-    text = bonus;
-  } else {
-    text = `+${bonus}`;
+// INTRODUCTION
+
+const cr = ref('');
+const xp = ref(null);
+
+const initiative = computed(() => abilityMods.value.dexterity);
+
+const sizeModifier = computed(() => {
+  let tempSize = props.character.introduction.sizeMod;
+
+  toggleKeys.forEach((button) => {
+    if ((typeof toggle[button].bonus !== 'undefined')
+      && 'size' in toggle[button].bonus && toggle[button].active) {
+      tempSize += toggle[button].bonus.size;
+    }
+  });
+
+  return tempSize;
+});
+
+// DEFENSE
+
+const ac = computed(() => {
+  const abp = {
+    armorEnhancement: 2,
+    deflection: 2,
+    naturalArmorEnhancement: 2,
+  };
+
+  const abpKeys = Object.keys(abp);
+
+  let tempAC = 10;
+
+  abpKeys.forEach((key) => {
+    tempAC += abp[key];
+  });
+
+  tempAC += abilityMods.value.dexterity + sizeModifier.value;
+
+  const gearKeys = Object.keys(props.character.gear);
+
+  toggleKeys.forEach((button) => {
+    if ('bonus' in toggle[button] && 'ac' in toggle[button].bonus && toggle[button].active) {
+      if ('bonusType' in toggle[button] && toggle[button].bonusType in abp) {
+        tempAC += Math.max(
+          toggle[button].bonus.ac - abp[toggle[button].bonusType],
+          abp[toggle[button].bonusType] - toggle[button].bonus.ac,
+        );
+      } else {
+        tempAC += toggle[button].bonus.ac;
+      }
+    }
+  });
+
+  gearKeys.forEach((item) => {
+    if (
+      typeof props.character.gear[item] === 'object'
+      && 'bonus' in props.character.gear[item]
+      && 'ac' in props.character.gear[item].bonus
+    ) {
+      tempAC += props.character.gear[item].bonus.ac;
+    }
+  });
+
+  return tempAC;
+});
+const maxHP = computed(() => {
+  let hitPoints = 0;
+
+  let maxHitDie = 0;
+
+  const CharClasses = props.character.introduction.class;
+
+  CharClasses.forEach((charClass) => {
+    if (charClass.name !== 'gestalt') {
+      if (charClass.first) {
+        hitPoints += charClass.hitDie;
+        hitPoints += (charClass.level - 1) * Math.ceil((charClass.hitDie + 1) / 2);
+      } else {
+        hitPoints += charClass.level * Math.ceil((charClass.hitDie + 1) / 2);
+      }
+      if (typeof charClass.favored !== 'undefined') {
+        if (typeof charClass.favored.hp !== 'undefined') {
+          hitPoints += charClass.favored.hp;
+        }
+      }
+    } else {
+      charClass.gestalt.forEach((gestaltClass) => {
+        maxHitDie = Math.max(gestaltClass.hitDie, maxHitDie);
+      });
+    }
+  });
+
+  if (props.character.introduction.solo) {
+    hitPoints = maxHitDie * level.value;
   }
-  return text;
-}
+
+  // eslint-disable-next-line no-unused-vars
+  hitPoints += level.value * abilityMods.value.constitution;
+
+  return hitPoints;
+});
+const currHP = computed(() => maxHP.value);
+const savingThrows = computed(() => {
+  const totalSaves = {
+    fort: 0,
+    ref: 0,
+    will: 0,
+  };
+
+  const resistanceBonus = 4;
+
+  let toggleBonus = 0;
+
+  toggleKeys.forEach((button) => {
+    if ((typeof toggle[button].bonus !== 'undefined')
+      && 'saves' in toggle[button].bonus && toggle[button].active) {
+      toggleBonus += toggle[button].bonus.saves;
+    }
+  });
+
+  toggleKeys.forEach((button) => {
+    if ((typeof toggle[button].bonus !== 'undefined')
+      && 'ref' in toggle[button].bonus && toggle[button].active) {
+      totalSaves.ref += toggle[button].bonus.ref;
+    }
+  });
+
+  const saveKeys = Object.keys(props.character.defense.saveAbilityScore);
+
+  saveKeys.forEach((save) => {
+    if (
+      props.character.introduction.class[0].gestalt[0].saves[save]
+      || props.character.introduction.class[0].gestalt[1].saves[save]
+    ) {
+      totalSaves[save] += 2;
+      totalSaves[save] += Math.floor(level.value / 2);
+    } else {
+      totalSaves[save] += Math.floor(level.value / 3);
+    }
+    totalSaves[save] += abilityMods.value[props.character.defense.saveAbilityScore[save]];
+    totalSaves[save] += resistanceBonus + toggleBonus;
+  });
+  return totalSaves;
+});
+
+// OFFENSE
+
+const melee = computed(() => {
+  let twoHanding = 0;
+
+  if (toggle['two handing'].active) twoHanding = 1;
+
+  let tempAttack = Math.max(abilityMods.value.dexterity, abilityMods.value.strength) + baseAtk.value
+    + props.character.introduction.sizeMod;
+  let tempDamage = Math.floor(abilityMods.value.strength * (1 + (0.5 * twoHanding)));
+
+  let tempDexDamage = Math.floor(abilityMods.value.dexterity);
+
+  if (toggle['power attack'].active) {
+    tempAttack += -(Math.floor(baseAtk.value / 4) + 1);
+    // eslint-disable-next-line no-unused-vars
+    tempDamage += (Math.floor(baseAtk.value / 4) + 1) * (2 + twoHanding);
+    tempDexDamage += (Math.floor(baseAtk.value / 4) + 1) * 2;
+  }
+
+  const dieSizeMod = sizeModifier.value;
+
+  let holy;
+
+  if (toggle.holy.active) {
+    holy = ' plus 2d6';
+  } else {
+    holy = '';
+  }
+
+  toggleKeys.forEach((button) => {
+    if ((typeof toggle[button].bonus !== 'undefined') && 'weaponDamage' in toggle[button].bonus && toggle[button].active) {
+      tempDexDamage += toggle[button].bonus.weaponDamage;
+      tempDamage += toggle[button].bonus.weaponDamage;
+    }
+    if ((typeof toggle[button].bonus !== 'undefined') && 'attackRolls' in toggle[button].bonus && toggle[button].active) {
+      tempAttack += toggle[button].bonus.attackRolls;
+    }
+  });
+
+  const option = {
+    name: 'Stella\'s Holy Cutlass',
+    attack: tempAttack + 2,
+    dieCount: 1,
+    dieSize: 6 - dieSizeMod,
+    damage: tempDexDamage + 2,
+    critRange: 15,
+  };
+
+  return `${option.name} ${formatBonus(option.attack)} \
+      (${option.dieCount}d${option.dieSize}${formatBonus(option.damage)}/${option.critRange}-20${holy})`;
+});
+const ranged = computed(() => {
+  let tempAttack = Math.max(abilityMods.value.dexterity, abilityMods.value.strength) + baseAtk.value
+    + props.character.introduction.sizeMod;
+  let tempDamage = abilityMods.value.strength;
+
+  if (toggle['power attack'].active) {
+    tempAttack += -(Math.floor(baseAtk.value / 4) + 1);
+    tempDamage += (Math.floor(baseAtk.value / 4) + 1) * 2;
+  }
+
+  const dieSizeMod = sizeModifier.value;
+
+  toggleKeys.forEach((button) => {
+    if ((typeof toggle[button].bonus !== 'undefined') && 'weaponDamage' in toggle[button].bonus && toggle[button].active) {
+      tempDamage += toggle[button].bonus.weaponDamage;
+    }
+    if ((typeof toggle[button].bonus !== 'undefined') && 'attackRolls' in toggle[button].bonus && toggle[button].active) {
+      tempAttack += toggle[button].bonus.attackRolls;
+    }
+  });
+
+  const option = {
+    name: 'Furies\' Flaming Burst Longbow',
+    attack: tempAttack + 2,
+    dieCount: 1,
+    dieSize: 8 - dieSizeMod,
+    damage: tempDamage + 2,
+    critRange: 20,
+  };
+
+  return `${option.name} ${formatBonus(option.attack)} \
+      (${option.dieCount}d${option.dieSize}${formatBonus(option.damage)})`;
+});
+
+const space = computed(() => '5');
+
+const reach = computed(() => '5');
+
+// const specialAttacks = computed(() => ({
+//   maxReservoir: Math.floor(character.introduction.class[0].level / 2) + 3,
+//   currResevoir: Math.floor(character.introduction.class[0].level / 2) + 3,
+// }));
+
+// TACTICS
 
 function formatList(myObj, myKeys) {
   let list = '';
@@ -879,7 +876,7 @@ function formatList(myObj, myKeys) {
     for (let index = 0; index < arrSize; index += 1) {
       if (typeof myObj[index] !== 'undefined') {
         if (typeof myObj[index] === 'object' && myObj[index] !== null) {
-          list += this.formatList(myObj[index], keys);
+          list += formatList(myObj[index], keys);
 
           if (index !== arrSize - 1) {
             list += ', ';
@@ -899,7 +896,7 @@ function formatList(myObj, myKeys) {
     for (let index = 0; index < size; index += 1) {
       if (keys[index] !== 'undefined') {
         if (typeof myObj[keys[index]] === 'object' && myObj[keys[index]][1] !== null) {
-          list += this.formatList(myObj[keys[index]]);
+          list += formatList(myObj[keys[index]]);
 
           if (index !== size - 1) list += ' ';
         } else {
@@ -933,7 +930,7 @@ function formatSpecial(myObj, myKeys) {
     for (let index = 0; index < arrSize; index += 1) {
       if (typeof myObj[index] !== 'undefined') {
         if (typeof myObj[index] === 'object' && myObj[index] !== null) {
-          list += this.formatSpecial(myObj[index], keys);
+          list += formatSpecial(myObj[index], keys);
           if (index !== arrSize - 1) {
             list += ', ';
           }
@@ -957,7 +954,7 @@ function formatSpecial(myObj, myKeys) {
 
       if (keys[index] !== 'undefined') {
         if (typeof myObj[keys[index]] === 'object' && myObj[keys[index]][1] !== null) {
-          list += this.formatSpecial(myObj[keys[index]]);
+          list += formatSpecial(myObj[keys[index]]);
           list += ')';
 
           if (index !== size - 1) list += ', ';
@@ -992,45 +989,45 @@ function formatSkills(myObj) {
 
   for (let index = 0; index < arrSize; index += 1) {
     if (keys[index] === 'knowledge') {
-      list += `${keys[index]} (${this.formatSkills(myObj[keys[index]])})`;
+      list += `${keys[index]} (${formatSkills(myObj[keys[index]])})`;
       comparer += 1;
     } else if (myObj.name === 'knowledge' && myObj[keys[index]] !== myObj[keys[0]]) {
       comparer += 1;
     } else {
       list += `${keys[index]} `;
-      list += this.formatBonus(myObj[keys[index]]);
+      list += formatBonus(myObj[keys[index]]);
     }
     if (index !== arrSize - 1) list += ', ';
   }
 
   if (comparer === 0) {
-    return this.formatBonus(myObj[keys[0]]);
+    return formatBonus(myObj[keys[0]]);
   }
   return list;
 }
 
 function formatArray(myArray) {
-  let list = '';
+  // let list = '';
 
-  myArray.forEach((item, idx, array) => {
-    list += item;
-    if (idx !== array.length - 1) list += ', ';
-  });
+  // myArray.forEach((item, idx) => {
+  //   list += item;
+  //   if (idx !== myArray.length - 1) list += ', ';
+  // });
 
-  return list;
+  return myArray;
 }
 
 // function closeInfo() {
-//   this.spellName = '';
+//   spellName = '';
 // }
 
-function changeSpell(value) {
-  this.spellName = value;
-}
-
-function changeInfo(value) {
-  this.abilityName = value;
-}
+// function changeSpell(value) {
+//   spellName.value = value;
+// }
+//
+// function changeInfo(value) {
+//   abilityName.value = value;
+// }
 
 function bgColor(duration) {
   let color;
