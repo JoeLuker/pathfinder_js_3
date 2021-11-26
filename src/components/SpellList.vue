@@ -79,7 +79,9 @@ function spellColor(value) {
 spellColor()
   .then((response) => {
     spellColorList.value = response.data;
-    if (spellColorList.value[0] !== undefined && spellColorList.value[0].school === 'enchantment') {
+    if (spellColorList.value !== undefined
+      && spellColorList.value[0] !== undefined
+      && spellColorList.value[0].school === 'enchantment') {
       return 'purple';
     }
     return 'green';
