@@ -73,8 +73,8 @@
 
           <div id="defensive abilities" v-text="character.defensiveAbilities"></div>
           <div id="dr">
-            <b>DR</b>
-            <span v-for="(drValue, drType, index) in character.dr" :key="index">
+            <b>DR </b>
+            <span v-for="(drValue, drType, index) in character.defense.dr" :key="index">
               {{ drValue }}/{{ drType }}
             </span>
           </div>
@@ -83,10 +83,10 @@
           <div id="sr" v-text="character.sr"></div>
 
         </div>
-        <div id="weaknesses">
-          <b>Weaknesses</b>
+        <div v-if="character.defense.weaknesses" id="weaknesses">
+          <b>Weaknesses </b>
           <span class="capitalize">
-          {{ formatArray(character.weaknesses) }}
+          {{ formatArray(character.defense.weaknesses) }}
           </span>
         </div>
 
@@ -160,37 +160,18 @@
           </span>
         </div>
 
-        <!--        <div id="extraordinaryAbilities">-->
-        <!--          <b @click="ExtraordinaryToggle = !ExtraordinaryToggle"
-        > Extraordinary Abilities </b>-->
-
-        <!--          <span v-show="!ExtraordinaryToggle">..</span>-->
-
-        <!--          <span v-show="ExtraordinaryToggle">-->
-
-        <!--            <span @click="abilityName = 'Misfortune'"
-        v-if="classFeatures['extraordinaryAbilities']['Misfortune']">Misfortune</span>-->
-        <!--            <span @click="abilityName = 'Fortune'"
-        v-if="classFeatures['extraordinaryAbilities']['Fortune']">, Fortune(2/day)</span>-->
-        <!--            <span @click="abilityName = 'Lore Master'"
-        v-if="classFeatures['extraordinaryAbilities']['Lore Master']"
-        >, Lore Master (1/day)</span>-->
-
-        <!--          </span>-->
-        <!--        </div>-->
-
         <div id="spells" class="capitalize">
           <!--          TODO-->
-          <!--          <div v-for="(caster, index) in character.introduction.class"
-          :key="index">-->
-          <!--            <SpellList v-bind:caster="character.introduction.class[index]"
-          @changeSpell="changeSpell"/>-->
-          <!--          </div>-->
-<!--          <div v-for="(caster, index)-->
-<!--          in character.introduction.class[0].gestalt" :key="index">-->
-<!--           <SpellList v-bind:caster="character.introduction.class[0].gestalt[index]"-->
-<!--                    @changeSpell="changeSpell"/>-->
-<!--          </div>-->
+          <div v-for="(caster, index) in character.introduction.class"
+               :key="index">
+            <SpellList v-bind:caster="character.introduction.class[index]"
+                       @changeSpell="changeSpell"/>
+          </div>
+          <div v-for="(caster, index)
+          in character.introduction.class[0].gestalt" :key="index">
+            <SpellList v-bind:caster="character.introduction.class[0].gestalt[index]"
+                       @changeSpell="changeSpell"/>
+          </div>
 
         </div>
 
@@ -234,7 +215,7 @@
           <b @click="featToggle = !featToggle">Feats </b>
           <span v-if="featToggle" id="feats" class="capitalize"
                 v-text="formatArray(character.statistics.feats)"/>
-          <span v-else>..</span>
+          <span v-else>...</span>
         </div>
         <div>
           <b @click="skillToggle = !skillToggle"> Skills </b>
@@ -308,23 +289,23 @@
 
 <!--      <div v-if="abilityName" class="info">-->
 
-<!--&lt;!&ndash;        <Info&ndash;&gt;-->
-<!--&lt;!&ndash;          v-bind:table="'ability'"&ndash;&gt;-->
-<!--&lt;!&ndash;          v-bind:name="abilityName"&ndash;&gt;-->
-<!--&lt;!&ndash;          @closeInfo="changeInfo"&ndash;&gt;-->
-<!--&lt;!&ndash;        />&ndash;&gt;-->
-
-<!--      </div>-->
-
-<!--      <div v-if="spellName" class="spellDesc">-->
-
-<!--        <FullText-->
-<!--          v-bind:table="'spell'"-->
-<!--          v-bind:name="spellName"-->
-<!--          @closeSpell="changeInfo"-->
+<!--        <Info-->
+<!--          v-bind:table="'ability'"-->
+<!--          v-bind:name="abilityName"-->
+<!--          @closeInfo="changeInfo"-->
 <!--        />-->
 
 <!--      </div>-->
+
+      <div v-if="spellName" class="spellDesc">
+
+        <FullText
+          v-bind:table="'spell'"
+          v-bind:name="spellName"
+          @closeSpell="changeInfo"
+        />
+
+      </div>
 
     </div>
 
@@ -335,6 +316,9 @@
 import {
   computed, ref, reactive, defineProps,
 } from 'vue';
+import SpellList from 'src/components/SpellList.vue';
+import FullText from 'src/components/FullText';
+// import Info from 'src/components/Info';
 
 const toggle = reactive({
   'shield of faith': {
@@ -411,6 +395,7 @@ const props = defineProps({
 });
 
 const toggleKeys = Object.keys(toggle);
+
 function formatBonus(bonus) {
   let text;
   if (bonus < 0) {
@@ -641,7 +626,8 @@ const sizeModifier = computed(() => {
 
 const ac = computed(() => {
   const abp = {
-    armorEnhancement: 2,
+    armorEnhancement: 3,
+    shieldEnhancement: 3,
     deflection: 2,
     naturalArmorEnhancement: 2,
   };
@@ -727,7 +713,7 @@ const savingThrows = computed(() => {
     will: 0,
   };
 
-  const resistanceBonus = 4;
+  const resistanceBonus = 5;
 
   let toggleBonus = 0;
 
@@ -805,7 +791,7 @@ const melee = computed(() => {
 
   const option = {
     name: 'Stella\'s Holy Cutlass',
-    attack: tempAttack + 2,
+    attack: tempAttack + 4,
     dieCount: 1,
     dieSize: 6 - dieSizeMod,
     damage: tempDexDamage + 2,
@@ -838,7 +824,7 @@ const ranged = computed(() => {
 
   const option = {
     name: 'Furies\' Flaming Burst Longbow',
-    attack: tempAttack + 2,
+    attack: tempAttack + 4,
     dieCount: 1,
     dieSize: 8 - dieSizeMod,
     damage: tempDamage + 2,
@@ -1007,14 +993,14 @@ function formatSkills(myObj) {
 }
 
 function formatArray(myArray) {
-  // let list = '';
+  let list = '';
 
-  // myArray.forEach((item, idx) => {
-  //   list += item;
-  //   if (idx !== myArray.length - 1) list += ', ';
-  // });
+  myArray.forEach((item, idx) => {
+    list += item;
+    if (idx !== myArray.length - 1) list += ', ';
+  });
 
-  return myArray;
+  return list;
 }
 
 // function closeInfo() {

@@ -21,6 +21,13 @@ const routes = [
     ],
   },
   {
+    path: '/Search',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/Search.vue') },
+    ],
+  },
+  {
     path: '/three',
     component: () => import('layouts/MainLayout.vue'),
     children: [

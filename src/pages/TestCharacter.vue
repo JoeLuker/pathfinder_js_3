@@ -18,13 +18,13 @@ const immogen = {
     class: [
       {
         name: 'gestalt',
-        level: 12,
+        level: 13,
         first: true,
         gestalt: [
           {
             archetype: ['archaeologist'],
             name: 'bard',
-            level: 11,
+            level: 13,
             hitDie: 8,
             bab: 3 / 4,
             skillRanks: 2,
@@ -53,7 +53,7 @@ const immogen = {
               hp: 0,
               skill: 0,
               race: {
-                human: 12,
+                human: 13,
               },
             },
             saves: {
@@ -61,7 +61,7 @@ const immogen = {
               ref: true,
               will: true,
             },
-            casterLevel: 12,
+            casterLevel: 13,
             casting: 'spontaneous',
             spells: {
 
@@ -133,7 +133,7 @@ const immogen = {
           {
             archetype: ['dual-cursed'],
             name: 'oracle',
-            level: 11,
+            level: 13,
             hitDie: 8,
             bab: 3 / 4,
             first: true,
@@ -154,7 +154,7 @@ const immogen = {
               hp: 0,
               skill: 0,
               race: {
-                human: 12,
+                human: 13,
               },
             },
             saves: {
@@ -162,7 +162,7 @@ const immogen = {
               ref: false,
               will: true,
             },
-            casterLevel: 12,
+            casterLevel: 13,
             casting: 'spontaneous',
             spells: {
               '6th': {
@@ -365,7 +365,7 @@ const immogen = {
       },
       charisma: {
         pointBuy: 16,
-        automaticBonusProgression: 4,
+        automaticBonusProgression: 6,
         levelUp: 3,
         racial: 2,
       },
@@ -375,17 +375,20 @@ const immogen = {
       'Auspicious Birth (Retrograde)',
       'Racial Heritage (Catfolk)',
       'Spellsong (Diplomacy)',
-      'Black Cat, Deft Maneuvers',
+      'Black Cat',
+      'Deft Maneuvers',
       'Lingering Performance',
       'Inexplicable Luck',
-      'Lucky x2',
-      'Combat Reflexes, Extra Revelation',
+      'Lucky x3',
+      'Combat Reflexes',
+      'Extra Revelation',
       'Lady Luck\'s Guidance',
       'Cosmic Gate',
       'Blood of Heroes',
       'Hero\'s Fortune',
       'Luck of Heroes',
       '??? (Advanced Rogue Trick)',
+      '???',
       '???',
     ],
     skills: {
@@ -589,11 +592,16 @@ const immogen = {
   },
   gear: {
     active: false,
-
     'Adamantite Celestial Armor': {
       bonusType: 'armor',
       bonus: {
         ac: 6,
+      },
+    },
+    'Singing Steel Buckler': {
+      bonusType: 'shield',
+      bonus: {
+        ac: 1,
       },
     },
   },
