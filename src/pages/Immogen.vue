@@ -5,9 +5,10 @@
 
 <script setup>
 import BaseSheet from 'components/BaseSheet';
+import { computed } from 'vue';
 
-const immogen = {
-  introduction: {
+const immogen = computed(() => {
+  const introduction = {
     name: 'Immogen',
     solo: true,
     race: 'human',
@@ -17,247 +18,242 @@ const immogen = {
     ],
     class: [
       {
-        name: 'gestalt',
+
+        archetype: ['archaeologist'],
+        name: 'bard',
         level: 13,
         first: true,
-        gestalt: [
-          {
-            archetype: ['archaeologist'],
-            name: 'bard',
-            level: 13,
-            hitDie: 8,
-            bab: 3 / 4,
-            skillRanks: 2,
-            classSkills: [
-              'Acrobatics',
-              'Appraise',
-              'Bluff',
-              'Climb',
-              'Craft',
-              'Diplomacy',
-              'Disguise',
-              'Escape Artist',
-              'Intimidate',
-              'Knowledge',
-              'Linguistics',
-              'Perception',
-              'Perform',
-              'Profession',
-              'Sense Motive',
-              'Sleight of Hand',
-              'Spellcraft',
-              'Stealth',
-              'Use Magic Device',
-            ],
-            favored: {
-              hp: 0,
-              skill: 0,
-              race: {
-                human: 13,
-              },
-            },
-            saves: {
-              fort: false,
-              ref: true,
-              will: true,
-            },
-            casterLevel: 13,
-            casting: 'spontaneous',
-            spells: {
-
-              '4th': {
-                slots: 4,
-                prepared: [
-                  'Invisibility, Greater',
-                  'Dimension Door',
-                  'Modify Memory',
-                ],
-              },
-              '3rd': {
-                slots: 6,
-                prepared: [
-                  'Haste',
-                  'Glibness',
-                  'Major Image',
-                  'Charm monster',
-                  'Confusion',
-                  'Good Hope',
-                  'Charm Monster',
-                  'False Future',
-                ],
-              },
-              '2nd': {
-                slots: 7,
-                prepared: [
-                  'Heroism',
-                  'Gallant Inspiration',
-                  'Blur',
-                  'Invisibility',
-                  'Heroic Fortune',
-                  'Share Memory',
-                  'Detect Thoughts',
-                  'Mirror Image',
-                ],
-              },
-              '1st': {
-                slots: 7,
-                prepared: [
-                  'Shadow Trap',
-                  '???',
-                  'Fabricate Disguise',
-                  'Saving Finale',
-                  'Hideous Laughter',
-                  'Grease',
-                  'Heightened Awareness',
-                  'Feather Fall',
-                  'Timely Inspiration',
-                ],
-              },
-              Cantrips: {
-                prepared: [
-                  'Dancing Lights',
-                  'Detect Magic',
-                  'Prestidigitation',
-                  'Daze',
-                  'Open/Close',
-                  'Mage Hand',
-                  'Lullaby',
-                  'Message',
-                  'Mending',
-                ],
-              },
-
-            },
-
+        hitDie: 8,
+        bab: 3 / 4,
+        skillRanks: 2,
+        classSkills: [
+          'Acrobatics',
+          'Appraise',
+          'Bluff',
+          'Climb',
+          'Craft',
+          'Diplomacy',
+          'Disguise',
+          'Escape Artist',
+          'Intimidate',
+          'Knowledge',
+          'Linguistics',
+          'Perception',
+          'Perform',
+          'Profession',
+          'Sense Motive',
+          'Sleight of Hand',
+          'Spellcraft',
+          'Stealth',
+          'Use Magic Device',
+        ],
+        favored: {
+          hp: 0,
+          skill: 0,
+          race: {
+            human: 13,
           },
-          {
-            archetype: ['dual-cursed'],
-            name: 'oracle',
-            level: 13,
-            hitDie: 8,
-            bab: 3 / 4,
-            first: true,
-            skillRanks: 2,
-            classSkills: [
-              'Craft',
-              'Diplomacy',
+        },
+        saves: {
+          fort: false,
+          ref: true,
+          will: true,
+        },
+        casterLevel: 13,
+        casting: 'spontaneous',
+        spells: {
+
+          '4th': {
+            slots: 4,
+            prepared: [
+              'Invisibility, Greater',
+              'Dimension Door',
+              'Modify Memory',
+            ],
+          },
+          '3rd': {
+            slots: 6,
+            prepared: [
+              'Haste',
+              'Glibness',
+              'Major Image',
+              'Charm monster',
+              'Confusion',
+              'Good Hope',
+              'Charm Monster',
+              'False Future',
+            ],
+          },
+          '2nd': {
+            slots: 7,
+            prepared: [
+              'Heroism',
+              'Gallant Inspiration',
+              'Blur',
+              'Invisibility',
+              'Heroic Fortune',
+              'Share Memory',
+              'Detect Thoughts',
+              'Mirror Image',
+            ],
+          },
+          '1st': {
+            slots: 7,
+            prepared: [
+              'Shadow Trap',
+              '???',
+              'Fabricate Disguise',
+              'Saving Finale',
+              'Hideous Laughter',
+              'Grease',
+              'Heightened Awareness',
+              'Feather Fall',
+              'Timely Inspiration',
+            ],
+          },
+          Cantrips: {
+            prepared: [
+              'Dancing Lights',
+              'Detect Magic',
+              'Prestidigitation',
+              'Daze',
+              'Open/Close',
+              'Mage Hand',
+              'Lullaby',
+              'Message',
+              'Mending',
+            ],
+          },
+
+        },
+        gestalt: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+      },
+      {
+        archetype: ['dual-cursed'],
+        name: 'oracle',
+        level: 13,
+        hitDie: 8,
+        bab: 3 / 4,
+        first: false,
+        skillRanks: 2,
+        classSkills: [
+          'Craft',
+          'Diplomacy',
+          'Heal',
+          // TODO
+          'Knowledge (history)',
+          'Knowledge (planes)',
+          'Knowledge (religion)',
+          'Profession',
+          'Sense Motive',
+          'Spellcraft',
+        ],
+        favored: {
+          hp: 0,
+          skill: 0,
+          race: {
+            human: 13,
+          },
+        },
+        saves: {
+          fort: false,
+          ref: false,
+          will: true,
+        },
+        casterLevel: 13,
+        casting: 'spontaneous',
+        spells: {
+          '6th': {
+            slots: 4,
+            prepared: [
               'Heal',
-              // TODO
-              'Knowledge (history)',
-              'Knowledge (planes)',
-              'Knowledge (religion)',
-              'Profession',
-              'Sense Motive',
-              'Spellcraft',
             ],
-            favored: {
-              hp: 0,
-              skill: 0,
-              race: {
-                human: 13,
-              },
-            },
-            saves: {
-              fort: false,
-              ref: false,
-              will: true,
-            },
-            casterLevel: 13,
-            casting: 'spontaneous',
-            spells: {
-              '6th': {
-                slots: 4,
-                prepared: [
-                  'Heal',
-                ],
-              },
+          },
 
-              '5th': {
-                slots: 6,
-                prepared: [
-                  'Slay Living',
-                  'Plane Shift',
-                  'Commune',
-                ],
-              },
-              '4th': {
-                slots: 7,
-                prepared: [
-                  'Sending',
-                  'Dimensional Anchor',
-                  'Dismissal',
-                  'Imbue with Spell Ability',
-                  'Wall of Fire',
-                  'Freedom of Movement',
-                ],
-              },
-              '3rd': {
-                slots: 8,
-                prepared: [
-                  'Dispel Magic',
-                  'Stunning Barrier',
-                  'Stone Shape',
-                  'Second Wind',
-                  'Shield of Wings',
-                  'Beacon of Luck',
-                ],
-              },
-              '2nd': {
-                slots: 8,
-                prepared: [
-                  'Hold person',
-                  'Silence',
-                  'Resist Energy',
-                  'Zone of Truth',
-                  'Ironskin',
-                  'Weapon of Awe',
-                  'Scorching Ray',
-                  'Detect Magic, Greater',
-                ],
-              },
-              '1st': {
-                slots: 8,
-                prepared: [
-                  'Shield of Faith',
-                  'Moment of Greatness',
-                  'Murderous Command',
-                  'Protection from Law',
-                  'Lucky Number',
-                  'Fallback Strategy',
-                  'Sure casting',
-                  'Burning Hands',
-                ],
-              },
-              Orisons: {
-                prepared: [
-                  'Create Water',
-                  'Read Magic',
-                  'Stabilize',
-                  'Enhance Diplomacy',
-                  'Purify Food and Drink',
-                  'Mending',
-                  'Vigor',
-                  'Spark',
-                ],
-              },
-
-            },
-            mysterySpells: [
-              {
-                name: 'Dual-Cursed',
-                '1st': 'ill omen',
-                '2nd': 'oracle\'s burden',
-                '3rd': 'Bestow Curse',
-              }, {
-                name: 'Time',
-                '4th': 'threefold aspect',
-                '5th': 'permanency',
-                '6th': 'contingency',
-              },
+          '5th': {
+            slots: 6,
+            prepared: [
+              'Slay Living',
+              'Plane Shift',
+              'Commune',
             ],
+          },
+          '4th': {
+            slots: 7,
+            prepared: [
+              'Sending',
+              'Dimensional Anchor',
+              'Dismissal',
+              'Imbue with Spell Ability',
+              'Wall of Fire',
+              'Freedom of Movement',
+            ],
+          },
+          '3rd': {
+            slots: 8,
+            prepared: [
+              'Dispel Magic',
+              'Stunning Barrier',
+              'Stone Shape',
+              'Second Wind',
+              'Shield of Wings',
+              'Beacon of Luck',
+            ],
+          },
+          '2nd': {
+            slots: 8,
+            prepared: [
+              'Hold person',
+              'Silence',
+              'Resist Energy',
+              'Zone of Truth',
+              'Ironskin',
+              'Weapon of Awe',
+              'Scorching Ray',
+              'Detect Magic, Greater',
+            ],
+          },
+          '1st': {
+            slots: 8,
+            prepared: [
+              'Shield of Faith',
+              'Moment of Greatness',
+              'Murderous Command',
+              'Protection from Law',
+              'Lucky Number',
+              'Fallback Strategy',
+              'Sure casting',
+              'Burning Hands',
+            ],
+          },
+          Orisons: {
+            prepared: [
+              'Create Water',
+              'Read Magic',
+              'Stabilize',
+              'Enhance Diplomacy',
+              'Purify Food and Drink',
+              'Mending',
+              'Vigor',
+              'Spark',
+            ],
+          },
 
+        },
+        mysterySpells: [
+          {
+            name: 'Dual-Cursed',
+            '1st': 'ill omen',
+            '2nd': 'oracle\'s burden',
+            '3rd': 'Bestow Curse',
+          }, {
+            name: 'Time',
+            '4th': 'threefold aspect',
+            '5th': 'permanency',
+            '6th': 'contingency',
           },
         ],
+        gestalt: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
       },
     ],
     alignment: 'CG',
@@ -267,8 +263,8 @@ const immogen = {
     subtype: ['human'],
     senses: [''],
     aura: '',
-  },
-  defense: {
+  };
+  const defense = {
     defensiveAbilities: '',
     dr: {
       '—': 2,
@@ -281,9 +277,11 @@ const immogen = {
       ref: 'charisma',
       will: 'wisdom',
     },
-  },
-  offense: {
+  };
+  const offense = {
     speed: 30,
+    space: 5,
+    reach: 5,
     specialAttacks: [
       {
         name: 'Cosmic Gate',
@@ -335,9 +333,9 @@ const immogen = {
         usesPerDay: 1,
       },
     ],
-  },
-  tactics: '',
-  statistics: {
+  };
+  const tactics = '';
+  const statistics = {
     abilityScore: {
       strength: {
         pointBuy: 11,
@@ -428,7 +426,7 @@ const immogen = {
         modifier: [
           {
             name: 'Clever Explorer',
-            bonus: 5,
+            bonus: Math.floor(introduction.class[0].level / 2),
           },
           {
             name: 'Mwk Thieves Tools',
@@ -585,12 +583,12 @@ const immogen = {
     },
     languages: '',
     specialQualities: '',
-  },
-  specialAbilities: {
+  };
+  const specialAbilities = {
     active: false,
     abilities: ['Bardic Knowledge'],
-  },
-  gear: {
+  };
+  const gear = {
     active: false,
     'Adamantite Celestial Armor': {
       bonusType: 'armor',
@@ -604,15 +602,79 @@ const immogen = {
         ac: 1,
       },
     },
-  },
-  ecology: '',
+  };
+  const ecology = '';
   // ecology: {
   //   environment: '',
   //   organization: '',
   //   treasure: '',
   // },
-  miscellaneous: '',
-};
+  const miscellaneous = '';
+  const toggle = {
+    'shield of faith': {
+      bonusType: 'deflection',
+      active: false,
+      duration: 1,
+      bonus: {
+        ac: 4,
+      },
+    },
+    'power attack': {
+      active: true,
+      duration: 3,
+
+    },
+    holy: {
+      active: false,
+      duration: 3,
+    },
+    heroism: {
+      bonusType: 'morale',
+      duration: 2,
+      active: true,
+      bonus: {
+        attackRolls: 2,
+        saves: 2,
+        skills: 2,
+      },
+    },
+    'archeologist\'s luck': {
+      bonusType: 'luck',
+      duration: 1,
+      active: true,
+      bonus: {
+        attackRolls: 4,
+        saves: 4,
+        skills: 4,
+        weaponDamage: 4,
+      },
+    },
+    Haste: {
+      bonusType: 'Dodge',
+      active: false,
+      duration: 2,
+      bonus: {
+        attackRolls: 1,
+        ref: 1,
+        ac: 1,
+      },
+
+    },
+  };
+
+  return {
+    introduction,
+    defense,
+    offense,
+    tactics,
+    statistics,
+    specialAbilities,
+    gear,
+    ecology,
+    miscellaneous,
+    toggle,
+  };
+});
 
 </script>
 

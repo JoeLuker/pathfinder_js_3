@@ -53,14 +53,24 @@ const linksList = [
     link: '/#/NewCharacter',
   },
   {
-    title: 'Test Character',
+    title: 'Immogen',
     icon: 'school',
-    link: '/#/TestCharacter',
+    link: '/#/Immogen',
+  },
+  {
+    title: 'Sareah',
+    icon: 'school',
+    link: '/#/Sareah',
   },
   {
     title: 'Search',
     icon: 'search',
     link: '/#/Search',
+  },
+  {
+    title: 'New Search',
+    icon: 'search',
+    link: '/#/NewSearch',
   },
   {
     title: 'Three',

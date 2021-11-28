@@ -14,10 +14,17 @@ const routes = [
     ],
   },
   {
-    path: '/TestCharacter',
+    path: '/Immogen',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/TestCharacter.vue') },
+      { path: '', component: () => import('pages/Immogen.vue') },
+    ],
+  },
+  {
+    path: '/Sareah',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/Sareah.vue') },
     ],
   },
   {
@@ -25,6 +32,13 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Search.vue') },
+    ],
+  },
+  {
+    path: '/NewSearch',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/NewSearch.vue') },
     ],
   },
   {

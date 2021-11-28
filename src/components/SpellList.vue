@@ -19,7 +19,7 @@
         <span>—</span>
         <i v-for="(spell, index) in spellList.prepared" v-bind:key="index">
           <span v-bind:style="{ color: fuck}"
-                v-on:click="$emit('changeSpell', spell)">{{ spell }}</span>
+                v-on:click="emit('spellSubmit', spell)">{{ spell }}</span>
 
           <span v-if="index !== spellList.prepared.length - 1">, </span>
 
@@ -27,7 +27,7 @@
 
         <span v-if="typeof caster.patronSpells !== 'undefined'">
         <i class="patron" v-show="caster.patronSpells[level]"> :
-          <span v-on:click="$emit('changeSpell', caster.patronSpells[level])">
+          <span @click="emit('spellSubmit', caster.patronSpells[level])">
             {{ caster.patronSpells[level] }}
           </span>
         </i>
@@ -36,7 +36,7 @@
         <i v-for="(mystery, index) in caster.mysterySpells" class="mystery"
            v-show="mystery[level]"
            :key="index"> :
-          <span v-on:click="$emit('changeSpell', mystery[level])">
+          <span @click="emit('spellSubmit', mystery[level])">
             {{ mystery[level] }}
           </span>
         </i>
@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from 'vue';
+import { defineProps, defineEmits, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { api } from 'boot/axios';
 
@@ -58,12 +58,14 @@ const $q = useQuasar();
 const toggleKey = ref(true);
 const fuck = ref('white');
 
-// eslint-disable-next-line no-unused-vars
-const props = defineProps({
+defineProps({
   caster: Object,
 });
 
+const emit = defineEmits(['spellSubmit']);
+
 const spellColorList = ref([]);
+
 function spellColor(value) {
   return api.get(`/spell?limit=1&name.ilike.${value}`)
     .then((response) => response.data)
@@ -76,6 +78,7 @@ function spellColor(value) {
       });
     });
 }
+
 spellColor()
   .then((response) => {
     spellColorList.value = response.data;
