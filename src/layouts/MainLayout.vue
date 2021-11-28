@@ -63,9 +63,9 @@ const linksList = [
     link: '/#/Sareah',
   },
   {
-    title: 'Search',
+    title: 'Gub',
     icon: 'search',
-    link: '/#/Search',
+    link: '/#/Gub',
   },
   {
     title: 'New Search',

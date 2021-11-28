@@ -28,10 +28,10 @@ const routes = [
     ],
   },
   {
-    path: '/Search',
+    path: '/Gub',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Search.vue') },
+      { path: '', component: () => import('pages/Gub.vue') },
     ],
   },
   {

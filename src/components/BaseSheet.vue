@@ -61,15 +61,26 @@
         <q-item class="justify-between">
           <q-item-section>
             <div id="ac">
-              <b>AC</b> <span> {{ ac }}</span>
-              <!--          <span>, touch {{ touchAC }}</span>-->
+              <b>AC</b> <span> {{ ac.default }}</span>
+              <span>, touch {{ ac.touch }}</span>
+              <span>, flat-footed {{ ac['flat-footed'] }}</span>
+              <span v-if="acBonuses && !acToggle" @click="acToggle = !acToggle" v-text="' (...)'"/>
+              <span v-if="acBonuses && acToggle" @click="acToggle = !acToggle"
+                    class="text-capitalize">
+              <span v-text="' ( '"/>
+              <span v-for="(value, name, index) in acBonuses" :key="index">
+                {{ formatBonus(value) }} {{ name }}
+                <span v-if="index != Object.keys(acBonuses).length - 1">, </span>
+              </span>
+              <span v-text="')'"/>
+                </span>
             </div>
             <div id="hp">
               <b>hp </b> <span>{{ currHP }}/{{ maxHP }}</span>
             </div>
             <div id="saving throws">
-              <b>Fort </b> <span id="fortitude" v-text="savingThrows.fort"/>
-              <b>, Ref </b> <span id="reflex" v-text="savingThrows.ref"/>
+              <b>Fort </b> <span id="fortitude" v-text="savingThrows.fortitude"/>
+              <b>, Ref </b> <span id="reflex" v-text="savingThrows.reflex"/>
               <b>, Will </b> <span id="will" v-text="savingThrows.will"/>
             </div>
             <div>
@@ -98,7 +109,7 @@
             <q-item>
               <q-item-section>
                 <q-input
-                  v-model.number="damage"
+                  v-model.number="damageTaken"
                   type="number"
                   :max="maxHP+abilityScores.constitution"
                   filled
@@ -109,7 +120,7 @@
                 <q-knob
                   show-value
                   :min="-abilityScores.constitution"
-                  :max="Math.max(maxHP,maxHP-damage)"
+                  :max="Math.max(maxHP,maxHP-damageTaken)"
                   :class="`text-${myTrackColor}`"
                   v-model="currHP"
                   size="50px"
@@ -136,12 +147,36 @@
           <b>Spd</b> <span> {{ character.offense.speed }} ft.</span>
         </div>
 
-        <div id="melee">
-          <b>Melee</b> {{ melee }}
+        <div id="melee" class="text-capitalize">
+          <b>Melee </b>
+          <span v-for="(option, index) in melee" :key="index">
+            <span v-text="option.name"/>
+            <span v-text="'&nbsp;'"/>
+            <span v-text="formatBonus(option.attack)"/>
+            <span v-if="option.damage || option.dieCount">
+              <span v-text="'&nbsp;'"/>
+              <span v-text="'('"/>
+              <span v-text="option.dieCount"/>
+              <span v-text="'d'"/>
+              <span v-text="option.dieSize"/>
+              <span v-text="formatBonus(option.damage)"/>
+              <span v-text="')'"/>
+            </span>
+
+          </span>
         </div>
 
-        <div id="ranged">
-          <b>Ranged</b> {{ ranged }}
+        <div id="ranged" class="text-capitalize">
+          <b>Ranged </b>
+          <span v-for="(option, index) in ranged" :key="index">
+            <span v-text="option.name"/>
+            <span v-text="'&nbsp;'"/>
+            <span v-text="formatBonus(option.attack)"/>
+            <span v-if="option.damage || option.dieCount">
+              <span v-text="formatBonus(option.damage)"/>
+            </span>
+
+          </span>
         </div>
 
         <div v-if="character.offense.space !== 5 || character.offense.reach !== 5">
@@ -325,19 +360,7 @@
       </q-expansion-item>
 
     </q-list>
-
     <div id="info">
-
-      <div id="buttons">
-        <div v-for="(bonus, name, index) in toggle" :key="index" class="toggle capitalize"
-             v-bind:style="{ 'background-color' : bgColor(bonus.duration)}">
-          <q-toggle
-            v-model="bonus.active"
-            :label="name"
-            left-label
-          />
-        </div>
-      </div>
 
       <!--      <div v-if="abilityName" class="info">-->
 
@@ -352,8 +375,52 @@
         <q-card-section class="text-h4">{{ spellRef.name }}</q-card-section>
         <Spell :spell="spellRef"/>
       </q-card>
+
+      <div class="q-pa-md" style="">
+        <q-btn
+          v-morph:btn:mygroup:300.resize="morphGroupModel"
+          class="q-ma-md"
+          fab
+          color="primary"
+          size="lg"
+          icon="add"
+          @click="nextMorph"
+        />
+
+        <q-card
+          v-morph:card1:mygroup:500.resize="morphGroupModel"
+          class="q-ma-md bg-primary text-white"
+          style="width: 300px; border-top-left-radius: 2em"
+        >
+          <q-card-actions align="left">
+            <q-btn flat label="Close" @click="nextMorph"/>
+          </q-card-actions>
+          <q-card-section class="text-h6">
+            <q-list class="column" id="buttons">
+              <q-item-section v-for="(bonus, index) in toggle"
+                              :key="index" class="toggle capitalize"
+                   v-bind:style="{ 'background-color' : bgColor(bonus.duration)}">
+                <q-toggle
+                  v-model="bonus.active"
+                  :label="bonus.name"
+                  left-label
+                />
+              </q-item-section>
+            </q-list>
+
+          </q-card-section>
+
+        </q-card>
+
+      </div>
+
     </div>
-    {{ modifiers }}
+    <!--        <q-table-->
+    <!--          title="Modifiers"-->
+    <!--          :rows="modifierSource.value"-->
+    <!--          row-key="name"-->
+    <!--        />-->
+
   </q-page>
 </template>
 
@@ -373,12 +440,23 @@ const props = defineProps({
   character: Object,
 });
 
+const nextMorphStep = {
+  btn: 'card1',
+  card1: 'btn',
+};
+
+const morphGroupModel = ref('btn');
+
+function nextMorph() {
+  morphGroupModel.value = nextMorphStep[morphGroupModel.value];
+}
+
 const toggle = reactive(props.character.toggle ?? {});
 
 const summarySkillToggle = ref(false);
 const skillToggle = ref(true);
 const featToggle = ref(false);
-// const acToggle = ref(false);
+const acToggle = ref(false);
 // const specialAbilitiesToggle = ref(true);
 const ExtraordinaryToggle = ref(true);
 const SupernaturalToggle = ref(true);
@@ -386,7 +464,80 @@ const SupernaturalToggle = ref(true);
 // const defensiveAbilitiesToggle = ref(true);
 // const abilityName = ref('');
 
-const toggleKeys = ref(Object.keys(toggle));
+const acBonuses = computed(() => {
+  const modifiersHolder = reactive({});
+
+  function modifierLoop(myObj) {
+    const myObjKeys = ref(Object.keys(myObj));
+    myObjKeys.value.forEach((button) => {
+      if (typeof myObj[button].bonus !== 'undefined' && myObj[button].active !== false) {
+        modifiersHolder.ac = modifiersHolder.ac ?? {};
+        if (myObj[button].bonus.ac) {
+          modifiersHolder.ac[myObj[button].bonusType] = modifiersHolder.ac[
+            myObj[button].bonusType] ?? [];
+          modifiersHolder.ac[myObj[button].bonusType].push(myObj[button].bonus.ac);
+        }
+      }
+    });
+  }
+
+  modifierLoop(toggle);
+  modifierLoop(props.character.gear);
+  modifierLoop(props.character.statistics.feats);
+  modifierLoop(props.character.introduction.traits);
+  modifierLoop(props.character.introduction.heritageTraits);
+
+  const holder = reactive({});
+
+  const stackableTypes = ref(['dodge', 'circumstance', 'untyped']);
+
+  const modifiersHolderKeys = ref(Object.keys(modifiersHolder));
+
+  modifiersHolderKeys.value.forEach((bonusTarget) => {
+    const bonusTargetKeys = ref(Object.keys(modifiersHolder[bonusTarget]));
+    bonusTargetKeys.value.forEach((bonusType) => {
+      holder[bonusTarget] = holder[bonusTarget] ?? {};
+      holder[bonusTarget][
+        bonusType] = holder[bonusTarget][bonusType] ?? 0;
+      holder[bonusTarget][
+        bonusType] += modifiersHolder[bonusTarget][
+        bonusType].reduce((accumulator, cur) => ((cur >= 0 || !(bonusType in stackableTypes.value))
+        ? Math.max(accumulator, cur) : accumulator + cur), 0);
+    });
+  });
+
+  return holder.ac;
+});
+
+// const modifierSource = computed(() => {
+//   const modifiersHolder = reactive({});
+//   const modifierRows = ref([]);
+//   // const modifierColumns = ref([]);
+//
+//   function modifierLoop(myObj) {
+//     // const myObjKeys = ref(Object.keys(myObj));
+//     modifierRows.value.push(...myObj);
+//     myObj.forEach((button) => {
+//       if (typeof button.bonus !== 'undefined' && button.active !== false) {
+//         const bonusKeys = ref(Object.keys(button.bonus));
+//         bonusKeys.value.forEach((key) => {
+//           modifiersHolder[key] = modifiersHolder[key] ?? {};
+//           modifiersHolder[key][button.bonusType] = modifiersHolder[key][
+//             button.bonusType] ?? [];
+//           modifiersHolder[key][button.bonusType].push(button.bonus[key]);
+//         });
+//       }
+//     });
+//   }
+//
+//   modifierLoop(toggle);
+//   modifierLoop(props.character.gear);
+//   modifierLoop(props.character.statistics.feats);
+//   modifierLoop(props.character.introduction.traits);
+//   modifierLoop(props.character.introduction.heritageTraits);
+//
+//   return modifierRows;
+// });
 
 const modifiers = computed(() => {
   const modifiersHolder = reactive({});
@@ -396,11 +547,11 @@ const modifiers = computed(() => {
     myObjKeys.value.forEach((button) => {
       if (typeof myObj[button].bonus !== 'undefined' && myObj[button].active !== false) {
         const bonusKeys = ref(Object.keys(myObj[button].bonus));
-        modifiersHolder[myObj[button].bonusType] = modifiersHolder[myObj[button].bonusType] ?? {};
         bonusKeys.value.forEach((key) => {
-          modifiersHolder[myObj[button].bonusType][key] = modifiersHolder[
-            myObj[button].bonusType][key] ?? [];
-          modifiersHolder[myObj[button].bonusType][key].push(myObj[button].bonus[key]);
+          modifiersHolder[key] = modifiersHolder[key] ?? {};
+          modifiersHolder[key][myObj[button].bonusType] = modifiersHolder[key][
+            myObj[button].bonusType] ?? [];
+          modifiersHolder[key][myObj[button].bonusType].push(myObj[button].bonus[key]);
         });
       }
     });
@@ -410,8 +561,25 @@ const modifiers = computed(() => {
   modifierLoop(props.character.gear);
   modifierLoop(props.character.statistics.feats);
   modifierLoop(props.character.introduction.traits);
+  modifierLoop(props.character.introduction.heritageTraits);
 
-  return modifiersHolder;
+  const holder = reactive({});
+
+  const stackableTypes = ref(['dodge', 'circumstance', 'untyped']);
+
+  const modifiersHolderKeys = ref(Object.keys(modifiersHolder));
+
+  modifiersHolderKeys.value.forEach((bonusTarget) => {
+    const bonusTargetKeys = ref(Object.keys(modifiersHolder[bonusTarget]));
+    bonusTargetKeys.value.forEach((bonusType) => {
+      holder[bonusTarget] = holder[bonusTarget] ?? 0;
+      holder[bonusTarget] += modifiersHolder[bonusTarget][
+        bonusType].reduce((accumulator, cur) => ((cur >= 0 && !(bonusType in stackableTypes.value))
+        ? Math.max(accumulator, cur) : accumulator + cur), 0);
+    });
+  });
+
+  return holder;
 });
 
 function formatBonus(bonus) {
@@ -426,25 +594,31 @@ function formatBonus(bonus) {
 
 const showSpells = computed(() => true);
 
+const sizeModifier = computed(() => {
+  let tempSize = props.character.introduction.sizeMod;
+
+  tempSize += modifiers.value.size ?? 0;
+
+  return tempSize;
+});
+
 // STATISTICS
 
 const abilityScores = computed(() => {
-  const husk = {
+  const husk = reactive({
     strength: 0,
     dexterity: 0,
     constitution: 0,
     intelligence: 0,
     wisdom: 0,
     charisma: 0,
-  };
+  });
 
   const objectHusk = reactive(props.character.statistics.abilityScore);
 
-  const keys = Object.keys(objectHusk);
+  const keys = ref(Object.keys(objectHusk));
 
-  const scoreHolder = ref(0);
-
-  keys.forEach((score) => {
+  keys.value.forEach((score) => {
     const subKeyHusk = reactive({});
     const existingSubKeys = ref(Object.keys(objectHusk[score]));
 
@@ -452,19 +626,8 @@ const abilityScores = computed(() => {
       subKeyHusk[subScore] = objectHusk[score][subScore];
     });
 
-    toggleKeys.value.forEach((button) => {
-      if (score in toggle[button].bonus) {
-        scoreHolder.value = (subKeyHusk[toggle[button].bonusType] ?? 0);
-        if (toggle[button].active && scoreHolder.value >= 0 && toggle[button].bonus[score] >= 0) {
-          subKeyHusk[toggle[button].bonusType] = Math.max(toggle[button].bonus[score],
-            scoreHolder.value);
-        } else if (toggle[button].active) {
-          subKeyHusk[toggle[button].bonusType] = toggle[button].bonus[score] + scoreHolder.value;
-        } else {
-          subKeyHusk[toggle[button].bonusType] = scoreHolder.value;
-        }
-      }
-    });
+    husk[score] += modifiers.value[score] ?? 0;
+
     const subKeys = Object.keys(subKeyHusk);
 
     subKeys.forEach((subScore) => {
@@ -517,21 +680,15 @@ const baseAtk = computed(() => {
 });
 
 const cmb = computed(() => {
-  let tempCMB = abilityMods.value.strength + baseAtk.value - props.character.introduction.sizeMod;
+  let tempCMB = abilityMods.value.strength + baseAtk.value + sizeModifier.value;
 
-  toggleKeys.value.forEach((button) => {
-    if ((typeof toggle[button].bonus !== 'undefined')
-      && 'attackRolls' in toggle[button].bonus
-      && toggle[button].active) {
-      tempCMB += toggle[button].bonus.attackRolls;
-    }
-  });
+  tempCMB += modifiers.value.attackRolls ?? 0;
 
   return tempCMB;
 });
 const cmd = computed(() => 10 + abilityMods.value.dexterity
   + abilityMods.value.strength + baseAtk.value
-  - props.character.introduction.sizeMod);
+  + sizeModifier.value);
 // eslint-disable-next-line max-len
 const level = computed(() => props.character.introduction.class.reduce(((accumulator, cur) => accumulator + cur.level), 0));
 
@@ -578,9 +735,9 @@ const skills = computed(() => {
     'use magic device': 0,
   };
 
-  if (props.character.introduction.sizeMod !== 0) {
-    totalSkills.fly += (Math.log2(props.character.introduction.sizeMod) + 1) * 2;
-    totalSkills.stealth += (Math.log2(props.character.introduction.sizeMod) + 1) * 4;
+  if (sizeModifier.value !== 0) {
+    totalSkills.fly += (Math.log2(sizeModifier.value) + 1) * 2;
+    totalSkills.stealth += (Math.log2(sizeModifier.value) + 1) * 4;
   }
 
   const classSkills = ref(props.character.introduction.class[0].classSkills);
@@ -611,11 +768,8 @@ const skills = computed(() => {
         totalSkills.knowledge[knowledgeSkillKey] += skillRanks.knowledge[knowledgeSkillKey].ranks;
         totalSkills.knowledge[knowledgeSkillKey]
           += abilityMods.value[skillRanks.knowledge[knowledgeSkillKey].ability];
-        toggleKeys.value.forEach((button) => {
-          if ((typeof toggle[button].bonus !== 'undefined') && 'skills' in toggle[button].bonus && toggle[button].active) {
-            totalSkills.knowledge[knowledgeSkillKey] += toggle[button].bonus.skills;
-          }
-        });
+        totalSkills.knowledge[knowledgeSkillKey] += modifiers.value.skills ?? 0;
+
         if (props.character.specialAbilities.abilities?.includes('Bardic Knowledge')) {
           totalSkills.knowledge[knowledgeSkillKey] += level.value;
         }
@@ -626,13 +780,8 @@ const skills = computed(() => {
     } else {
       totalSkills[skillKey] += skillRanks[skillKey].ranks;
       totalSkills[skillKey] += abilityMods.value[skillRanks[skillKey].ability];
-      // eslint-disable-next-line max-len
-      totalSkills[skillKey] += skillRanks[skillKey].modifier.reduce((accumulator, cur) => (accumulator + cur.bonus), 0);
-      toggleKeys.value.forEach((button) => {
-        if ((typeof toggle[button].bonus !== 'undefined') && 'skills' in toggle[button].bonus && toggle[button].active) {
-          totalSkills[skillKey] += toggle[button].bonus.skills;
-        }
-      });
+      totalSkills[skillKey] += modifiers.value[skillKey] ?? 0;
+      totalSkills[skillKey] += modifiers.value.skills ?? 0;
 
       if (skillRanks[skillKey].ranks >= 1) {
         summarySkills[skillKey] = totalSkills[skillKey];
@@ -651,67 +800,18 @@ const skills = computed(() => {
 const cr = ref('');
 const xp = ref(null);
 
-const initiative = computed(() => abilityMods.value.dexterity);
-
-const sizeModifier = computed(() => {
-  let tempSize = props.character.introduction.sizeMod;
-
-  toggleKeys.value.forEach((button) => {
-    if ((typeof toggle[button].bonus !== 'undefined')
-      && 'size' in toggle[button].bonus && toggle[button].active) {
-      tempSize += toggle[button].bonus.size;
-    }
-  });
-
-  return tempSize;
-});
+const initiative = computed(() => abilityMods.value.dexterity + (modifiers.value.initiative ?? 0));
 
 // DEFENSE
 
 const ac = computed(() => {
-  const abp = {
-    armorEnhancement: 3,
-    shieldEnhancement: 3,
-    deflection: 2,
-    naturalArmorEnhancement: 2,
-  };
+  const tempAC = 10 + sizeModifier.value;
 
-  const abpKeys = Object.keys(abp);
-
-  let tempAC = 10;
-
-  abpKeys.forEach((key) => {
-    tempAC += abp[key];
+  return reactive({
+    default: tempAC + (modifiers.value.ac ?? 0) + abilityMods.value.dexterity,
+    touch: tempAC + (modifiers.value.touchAC ?? 0) + abilityMods.value.dexterity,
+    'flat-footed': tempAC + (modifiers.value.ffAC ?? 0),
   });
-
-  tempAC += abilityMods.value.dexterity + sizeModifier.value;
-
-  const gearKeys = Object.keys(props.character.gear);
-
-  toggleKeys.value.forEach((button) => {
-    if ('bonus' in toggle[button] && 'ac' in toggle[button].bonus && toggle[button].active) {
-      if ('bonusType' in toggle[button] && toggle[button].bonusType in abp) {
-        tempAC += Math.max(
-          toggle[button].bonus.ac - abp[toggle[button].bonusType],
-          abp[toggle[button].bonusType] - toggle[button].bonus.ac,
-        );
-      } else {
-        tempAC += toggle[button].bonus.ac;
-      }
-    }
-  });
-
-  gearKeys.forEach((item) => {
-    if (
-      typeof props.character.gear[item] === 'object'
-      && 'bonus' in props.character.gear[item]
-      && 'ac' in props.character.gear[item].bonus
-    ) {
-      tempAC += props.character.gear[item].bonus.ac;
-    }
-  });
-
-  return tempAC;
 });
 const maxHP = computed(() => {
   let hitPoints = 0;
@@ -751,58 +851,41 @@ const maxHP = computed(() => {
 });
 // const inputDamage = ref(0);
 
-const damage = ref(0);
+const damageTaken = ref(0);
 
 const currHP = computed({
-  get: () => maxHP.value - damage.value,
+  get: () => maxHP.value - damageTaken.value,
   set: (value) => {
-    damage.value = maxHP.value - value;
+    damageTaken.value = maxHP.value - value;
   },
 });
 
-// function onSubmit() {
-//   damage.value += inputDamage.value;
-//   inputDamage.value = 0;
-// }
-
 const savingThrows = computed(() => {
   const totalSaves = {
-    fort: 0,
-    ref: 0,
+    fortitude: 0,
+    reflex: 0,
     will: 0,
   };
 
-  const resistanceBonus = 5;
+  let allBonus = 0;
 
-  let toggleBonus = 0;
-
-  toggleKeys.value.forEach((button) => {
-    if ((typeof toggle[button].bonus !== 'undefined')
-      && 'saves' in toggle[button].bonus && toggle[button].active) {
-      toggleBonus += toggle[button].bonus.saves;
-    }
-  });
-
-  toggleKeys.value.forEach((button) => {
-    if ((typeof toggle[button].bonus !== 'undefined')
-      && 'ref' in toggle[button].bonus && toggle[button].active) {
-      totalSaves.ref += toggle[button].bonus.ref;
-    }
-  });
+  allBonus += modifiers.value.saves ?? 0;
 
   const saveKeys = Object.keys(props.character.defense.saveAbilityScore);
 
   saveKeys.forEach((save) => {
     if ((props.character.introduction.class[0].saves[save] ?? false)
-
     ) {
       totalSaves[save] += 2;
       totalSaves[save] += Math.floor(level.value / 2);
     } else {
       totalSaves[save] += Math.floor(level.value / 3);
     }
+
+    totalSaves[save] += modifiers.value[save] ?? 0;
+
     totalSaves[save] += abilityMods.value[props.character.defense.saveAbilityScore[save]];
-    totalSaves[save] += resistanceBonus + toggleBonus;
+    totalSaves[save] += allBonus;
   });
   return totalSaves;
 });
@@ -814,83 +897,75 @@ const melee = computed(() => {
 
   if (toggle['two handing']?.active) twoHanding = 1;
 
-  let tempAttack = Math.max(abilityMods.value.dexterity, abilityMods.value.strength) + baseAtk.value
-    + props.character.introduction.sizeMod;
-  let tempDamage = Math.floor(abilityMods.value.strength * (1 + (0.5 * twoHanding)));
+  const tempMeleeAttack = ref(Math.max(abilityMods.value.dexterity, abilityMods.value.strength)
+    + baseAtk.value
+    + sizeModifier.value);
+  const tempMeleeDamage = ref(Math.floor(abilityMods.value.strength * (1 + (0.5 * twoHanding))));
 
-  let tempDexDamage = Math.floor(abilityMods.value.dexterity);
+  // let tempDexDamage = Math.floor(abilityMods.value.dexterity);
 
   if (toggle['power attack']?.active) {
-    tempAttack += -(Math.floor(baseAtk.value / 4) + 1);
+    tempMeleeAttack.value += -(Math.floor(baseAtk.value / 4) + 1);
     // eslint-disable-next-line no-unused-vars
-    tempDamage += (Math.floor(baseAtk.value / 4) + 1) * (2 + twoHanding);
-    tempDexDamage += (Math.floor(baseAtk.value / 4) + 1) * 2;
+    tempMeleeDamage.value += (Math.floor(baseAtk.value / 4) + 1) * (2 + twoHanding);
+    // tempDexDamage += (Math.floor(baseAtk.value / 4) + 1) * 2;
   }
 
-  const dieSizeMod = sizeModifier.value;
+  const dieSizeMod = ref(sizeModifier.value);
 
-  let holy;
+  // let holy;
 
-  if (toggle.holy?.active) {
-    holy = ' plus 2d6';
-  } else {
-    holy = '';
-  }
+  // if (toggle.holy?.active) {
+  //   holy = ' plus 2d6';
+  // } else {
+  //   holy = '';
+  // }
 
-  toggleKeys.value.forEach((button) => {
-    if ((typeof toggle[button].bonus !== 'undefined') && 'weaponDamage' in toggle[button].bonus && toggle[button].active) {
-      tempDexDamage += toggle[button].bonus.weaponDamage;
-      tempDamage += toggle[button].bonus.weaponDamage;
-    }
-    if ((typeof toggle[button].bonus !== 'undefined') && 'attackRolls' in toggle[button].bonus && toggle[button].active) {
-      tempAttack += toggle[button].bonus.attackRolls;
-    }
+  tempMeleeDamage.value += modifiers.value.weaponDamage ?? 0;
+  // tempDexDamage += modifiers.value.weaponDamage ?? 0;
+
+  tempMeleeAttack.value += modifiers.value.attackRolls ?? 0;
+
+  const mOptions = ref([]);
+
+  props.character.offense.melee.forEach((meleeOption) => {
+    const option = ref({});
+    Object.keys(meleeOption)
+      .forEach((meleeAttr) => {
+        option.value[meleeAttr] = meleeOption[meleeAttr];
+      });
+    option.value.attack += tempMeleeAttack.value;
+    option.value.damage += tempMeleeDamage.value;
+    option.value.dieSize -= dieSizeMod.value;
+    mOptions.value.push(option.value);
   });
 
-  const option = {
-    name: 'Stella\'s Holy Cutlass',
-    attack: tempAttack + 4,
-    dieCount: 1,
-    dieSize: 6 - dieSizeMod,
-    damage: tempDexDamage + 2,
-    critRange: 15,
-  };
-
-  return `${option.name} ${formatBonus(option.attack)} \
-      (${option.dieCount}d${option.dieSize}${formatBonus(option.damage)}/${option.critRange}-20${holy})`;
+  return mOptions.value;
 });
+
 const ranged = computed(() => {
-  let tempAttack = Math.max(abilityMods.value.dexterity, abilityMods.value.strength) + baseAtk.value
-    + props.character.introduction.sizeMod;
-  let tempDamage = abilityMods.value.strength;
+  const tempRangedAttack = ref(Math.max(abilityMods.value.dexterity, abilityMods.value.strength)
+    + baseAtk.value
+    + sizeModifier.value + (modifiers.value.attackRolls ?? 0));
+  const tempRangedDamage = ref(abilityMods.value.strength + (modifiers.value.weaponDamage ?? 0));
 
-  if (toggle['power attack']?.active) {
-    tempAttack += -(Math.floor(baseAtk.value / 4) + 1);
-    tempDamage += (Math.floor(baseAtk.value / 4) + 1) * 2;
-  }
+  const dieSizeMod = ref(sizeModifier.value);
 
-  const dieSizeMod = sizeModifier.value;
+  const rOptions = ref([]);
 
-  toggleKeys.value.forEach((button) => {
-    if ((typeof toggle[button].bonus !== 'undefined') && 'weaponDamage' in toggle[button].bonus && toggle[button].active) {
-      tempDamage += toggle[button].bonus.weaponDamage;
-    }
-    if ((typeof toggle[button].bonus !== 'undefined') && 'attackRolls' in toggle[button].bonus && toggle[button].active) {
-      tempAttack += toggle[button].bonus.attackRolls;
-    }
+  props.character.offense.ranged.forEach((rangedOption) => {
+    const option = ref({});
+    Object.keys(rangedOption)
+      .forEach((rangedAttr) => {
+        option.value[rangedAttr] = rangedOption[rangedAttr];
+      });
+    option.value.attack += tempRangedAttack.value;
+    option.value.damage += tempRangedDamage.value;
+    option.value.dieSize -= dieSizeMod.value;
+    rOptions.value.push(option.value);
   });
 
-  const option = {
-    name: 'Furies\' Flaming Burst Longbow',
-    attack: tempAttack + 4,
-    dieCount: 1,
-    dieSize: 8 - dieSizeMod,
-    damage: tempDamage + 2,
-    critRange: 20,
-  };
-
-  return `${option.name} ${formatBonus(option.attack)} \
-      (${option.dieCount}d${option.dieSize}${formatBonus(option.damage)})`;
+  return rOptions.value;
 });
 
 // const specialAttacks = computed(() => ({
@@ -1097,7 +1172,6 @@ function bgColor(duration) {
 
 const myColor = computed(() => (currHP.value >= 0 ? 'blue' : 'red'));
 const myTrackColor = computed(() => `${myColor.value}-3`);
-// const knobNumber = ref(0);
 
 </script>
 

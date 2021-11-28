@@ -1,23 +1,30 @@
 <template>
-  <BaseSheet :character="sareah">
-  </BaseSheet>
+  <BaseSheet :character="gub"/>
 </template>
 
 <script setup>
 import BaseSheet from 'components/BaseSheet';
 import { reactive } from 'vue';
 
-const sareah = reactive({
+const gub = reactive({
   introduction: {
-    name: 'Sareah',
-    race: 'half-elf',
+    name: 'gub the great',
+    race: 'monkey goblin',
     heritageTraits: [
       {
-        name: 'Mismatched',
-        bonusType: 'racialTrait',
+        name: 'Gublin!',
+        bonusType: 'racial',
         bonus: {
-          initiative: 4,
-          reflex: -2,
+          acrobatics: 2,
+          stealth: 2,
+        },
+      },
+      {
+        name: 'Oblivious',
+        bonusType: 'racial',
+        bonus: {
+          'sense motive': -2,
+          perception: -2,
         },
       },
     ],
@@ -26,121 +33,93 @@ const sareah = reactive({
       'less effort',
       'auspicious tattoo',
       'advantageous distraction',
-      {
-        name: 'reactionary',
-        bonusType: 'trait',
-        bonus: {
-          initiative: 2,
-        },
-      },
+      'reactionary',
       'fate\'s favored',
-      {
-        name: 'bluff trait (fill this later)',
-        bonusType: 'trait',
-        bonus: {
-          bluff: 1,
+    ],
+    class: [{
+      archetype: ['brown-fur transmuter'],
+      name: 'arcanist',
+      level: 8,
+      hitDie: 6,
+      bab: 1 / 2,
+      first: true,
+      skillRanks: 2,
+      classSkills: ['appraise', 'craft', 'fly', 'knowledge', 'lingustics', 'profession', 'spellcraft', 'use magic device'],
+      favored: {
+        hp: 8,
+        skill: 0,
+        race: {
+          'monkey goblin': 0,
         },
       },
-    ],
-    class: [
-      {
-        archetype: ['ley-line gaurdian'],
-        name: 'witch',
-        level: 8,
-        hitDie: 6,
-        bab: 1 / 2,
-        first: true,
-        skillRanks: 2,
-        classSkills: ['craft', 'bluff', 'diplomacy', 'fly', 'heal', 'arcana', 'history', 'nature', 'history', 'planes', 'profession', 'spellcraft', 'use magic device'],
-        favored: {
-          hp: 3,
-          skill: 0,
-          race: {
-            'half-elf': 8,
-          },
+      saves: {
+        fort: false,
+        ref: false,
+        will: true,
+      },
+      spells: {
+        '4th': {
+          slots: 3,
+          prepared: [
+            'remove curse',
+          ],
         },
-        saves: {
-          fortitude: false,
-          reflex: false,
-          will: true,
+        '3rd': {
+          slots: 5,
+          prepared: [
+            'haste',
+            'fly',
+          ],
         },
-        casterLevel: 8,
-        casting: 'spontanious',
-        spells: {
-          '4th': {
-            slots: 5,
-            prepared: [
-              'enervation',
-            ],
-          },
-          '3rd': {
-            slots: 7,
-            prepared: [
-              'suggestion',
-              'lightning bolt',
-              'bestow curse',
-            ],
-          },
-          '2nd': {
-            slots: 8,
-            prepared: [
-              'lipstitch',
-              'hold person',
-              'web',
-              'enthrall',
-              'limp lash',
-              'zone of truth',
+        '2nd': {
+          slots: 5,
+          prepared: [
+            'cat\'s grace',
+            'bull\'s strength',
+            'alter self',
 
-            ],
-          },
-          '1st': {
-            slots: 9,
-            prepared: [
-              'murderous command',
-              'charm person',
-              'mage armor',
-              'ear-piercing scream',
-              'beguiling gift',
-              'ill omen',
-              'ray of enfeeblement',
-            ],
-          },
-          Cantrips: {
-            prepared: [
-              'mage hand',
-              'detect magic',
-              'light',
-              'daze',
-              'bleed',
-              'touch of fatigue',
-              '???',
-              '???',
-
-            ],
-          },
-
+          ],
         },
-        patronSpells: {
-          name: 'jynx',
-          '1st': 'animate rope',
-          '2nd': 'mirror image',
-          '3rd': 'major image',
-          '4th': 'hallucinatory terrain',
+        '1st': {
+          slots: 5,
+          prepared: [
+            'enlarge person',
+            'reduce person',
+            'mage armor',
+            'shield',
+            'mindlink',
 
+          ],
         },
-      }],
+        Cantrips: {
+          prepared: [
+            'read magic',
+            'detect magic',
+            'mage hand',
+            'light',
+            'acid splash',
+            'ghost sound',
+            'message',
+            'sotto voce',
+          ],
+        },
+
+      },
+      casterLevel: 8,
+      casting: 'prepared',
+    }],
     alignment: 'N',
-    size: 'medium',
-    sizeMod: 0,
+    size: 'small',
+    sizeMod: 1,
     type: 'humanoid',
-    subtype: ['elf', 'human'],
+    subtype: ['goblinoid'],
     senses: ['low-light vision'],
     aura: '',
   },
   defense: {
     defensiveAbilities: '',
     dr: '',
-    immune: ['sleep'],
+    immune: '',
     resist: '',
     sr: '',
     weaknesses: '',
@@ -151,24 +130,21 @@ const sareah = reactive({
     },
   },
   offense: {
-    speed: 30,
+    speed: 20,
     space: 5,
     reach: 5,
     specialAttacks: [
       {
-        name: 'Witch Hexes (DC 22)',
-        hexes: [
-          'cackle',
-          'misfortune',
-          'evil eye',
-          'slumber',
-          'flight',
-          'gift of consumption',
-        ],
+        name: 'Arcane Reservoir',
+        ranks: 0,
       },
       {
-        name: 'Conduit Surge (1d4)',
-        usesPerDay: 1,
+        name: 'Arcanist Exploits',
+        exploits: [
+          'item crafting',
+          'quick study',
+          'dimensional slide',
+        ],
       },
     ],
     spellLikeAbilities: '',
@@ -193,49 +169,42 @@ const sareah = reactive({
   statistics: {
     abilityScore: {
       strength: {
-        pointBuy: 6,
+        pointBuy: 16,
       },
       dexterity: {
-        pointBuy: 15,
+        pointBuy: 17,
+        racial: 4,
+
       },
       constitution: {
-        pointBuy: 14,
-        enhancement: 2,
+        pointBuy: 9,
       },
       intelligence: {
-        pointBuy: 17,
-        racial: 2,
-        levelUp: 2,
+        pointBuy: 13,
+        levelUp: 1,
       },
       wisdom: {
-        pointBuy: 13,
+        pointBuy: 6,
+        racial: -2,
       },
       charisma: {
-        pointBuy: 13,
+        pointBuy: 11,
+        levelUp: 1,
       },
     },
     feats: [
-      {
-        name: 'Skill Focus (Bluff)',
-        bonusType: 'untyped',
-        bonus: {
-          bluff: 2,
-        },
-      },
-      'Accursed Hex',
-      {
-        name: 'Improved Initiative',
-        type: 'combat',
-        bonusType: 'untyped',
-        bonus: {
-          initiative: 4,
-        },
-      },
-      // 'Spell Focus (Enchantment)',
-      'Extra Hex (Flight)',
-      // 'Spell Focus (Necromancy)',
-      // 'Spell Focus (Illusion)',
-      // 'Witch Knife',
+      'additional traits',
+      'craft wondrous item',
+      'craft construct',
+      'leadership (13)',
+      // 'precise shot',
+      // 'weapon focus (longbow)',
+      // 'favored prestige class',
+      // 'prestigous spellcaster',
+      // 'rapidshot',
+      // 'manyshot',
+      // 'prestigous spellcaster',
+      // 'arrow storm',
     ],
     skills: {
       acrobatics: {
@@ -247,8 +216,8 @@ const sareah = reactive({
         ability: 'intelligence',
       },
       bluff: {
-        ranks: 4,
-        ability: 'intelligence',
+        ranks: 0,
+        ability: 'charisma',
       },
       climb: {
         ranks: 0,
@@ -259,11 +228,11 @@ const sareah = reactive({
         ability: 'intelligence',
       },
       diplomacy: {
-        ranks: 4,
-        ability: 'intelligence',
+        ranks: 0,
+        ability: 'charisma',
       },
       'disable device': {
-        ranks: 0,
+        ranks: 4,
         ability: 'dexterity',
       },
       disguise: {
@@ -271,7 +240,7 @@ const sareah = reactive({
         ability: 'charisma',
       },
       'escape artist': {
-        ranks: 0,
+        ranks: 4,
         ability: 'dexterity',
       },
       fly: {
@@ -357,7 +326,7 @@ const sareah = reactive({
         ability: 'wisdom',
       },
       'slight of hand': {
-        ranks: 0,
+        ranks: 4,
         ability: 'dexterity',
       },
       spellcraft: {
@@ -365,7 +334,7 @@ const sareah = reactive({
         ability: 'intelligence',
       },
       stealth: {
-        ranks: 0,
+        ranks: 4,
         ability: 'dexterity',
       },
       survival: {
@@ -373,11 +342,11 @@ const sareah = reactive({
         ability: 'wisdom',
       },
       swim: {
-        ranks: 1,
+        ranks: 0,
         ability: 'strength',
       },
       'use magic device': {
-        ranks: 0,
+        ranks: 4,
         ability: 'charisma',
       },
     },
@@ -387,11 +356,12 @@ const sareah = reactive({
   specialAbilities: '',
   gear: [
     {
-      name: 'Headband of Vast Intellect +6',
+      name: 'Headband of Vast Intellect +4/+4',
       bonusType: 'enhancement',
       cost: 0,
       bonus: {
-        intelligence: 6,
+        intelligence: 4,
+        charisma: 4,
       },
     },
     {
@@ -403,20 +373,20 @@ const sareah = reactive({
       },
     },
     {
-      name: 'Cloak of Resistance +5',
+      name: 'Cloak of Resistance +2',
       bonusType: 'resistance',
       cost: 25000,
       bonus: {
-        saves: 5,
+        saves: 2,
       },
     },
     {
-      name: 'Mythril Buckler +2',
+      name: 'Mythril Buckler +1',
       bonusType: 'shield',
       cost: 0,
       bonus: {
-        ac: 3,
-        ffAC: 3,
+        ac: 2,
+        ffAC: 2,
       },
     },
     {
@@ -439,10 +409,11 @@ const sareah = reactive({
       },
     },
     {
-      name: 'Masterwork Tools (Bluff)',
+      name: 'Masterwork Tools (Craft/SpellCraft)',
       bonusType: 'circumstance',
       bonus: {
-        bluff: 2,
+        craft: 2,
+        spellcraft: 2,
       },
     },
   ],
@@ -453,7 +424,6 @@ const sareah = reactive({
   //   treasure: '',
   // },
   miscellaneous: '',
-
   toggle: [
 
     {
@@ -506,8 +476,8 @@ const sareah = reactive({
       },
     },
   ],
-});
 
+});
 </script>
 
 <style scoped>

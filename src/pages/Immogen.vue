@@ -333,6 +333,23 @@ const immogen = computed(() => {
         usesPerDay: 1,
       },
     ],
+    melee: {
+      'Stella\'s Holy Cutlass': {
+        attack: 4,
+        dieCount: 1,
+        dieSize: 6,
+        damage: 4,
+        critRange: 15,
+      },
+    },
+    ranged: {
+      'Furies\' Flaming Burst Longbow': {
+        attack: 4,
+        dieCount: 1,
+        dieSize: 8,
+        damage: 4,
+      },
+    },
   };
   const tactics = '';
   const statistics = {
@@ -589,17 +606,34 @@ const immogen = computed(() => {
     abilities: ['Bardic Knowledge'],
   };
   const gear = {
-    active: false,
     'Adamantite Celestial Armor': {
       bonusType: 'armor',
       bonus: {
         ac: 6,
       },
     },
-    'Singing Steel Buckler': {
-      bonusType: 'shield',
+    abpNaturalArmor: {
+      bonusType: 'naturalArmorEnhancement',
       bonus: {
-        ac: 1,
+        ac: 2,
+      },
+    },
+    abpDeflection: {
+      bonusType: 'deflection',
+      bonus: {
+        ac: 2,
+      },
+    },
+    abpShield: {
+      bonusType: 'shieldEnhancement',
+      bonus: {
+        ac: 3,
+      },
+    },
+    abpArmor: {
+      bonusType: 'armorEnhancement',
+      bonus: {
+        ac: 3,
       },
     },
   };
