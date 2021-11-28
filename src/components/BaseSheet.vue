@@ -353,8 +353,6 @@
         <Spell :spell="spellRef"/>
       </q-card>
     </div>
-    {{ buffs }}
-    <br>
     {{ modifiers }}
   </q-page>
 </template>
@@ -396,13 +394,12 @@ const modifiers = computed(() => {
   function modifierLoop(myObj) {
     const myObjKeys = ref(Object.keys(myObj));
     myObjKeys.value.forEach((button) => {
-      const bonusKeys = ref(Object.keys(myObj[button].bonus));
-      if (myObj[button].active) {
+      if (typeof myObj[button].bonus !== 'undefined' && myObj[button].active !== false) {
+        const bonusKeys = ref(Object.keys(myObj[button].bonus));
         modifiersHolder[myObj[button].bonusType] = modifiersHolder[myObj[button].bonusType] ?? {};
         bonusKeys.value.forEach((key) => {
           modifiersHolder[myObj[button].bonusType][key] = modifiersHolder[
-            myObj[button].bonusType][key
-          ] ?? [];
+            myObj[button].bonusType][key] ?? [];
           modifiersHolder[myObj[button].bonusType][key].push(myObj[button].bonus[key]);
         });
       }
@@ -410,23 +407,11 @@ const modifiers = computed(() => {
   }
 
   modifierLoop(toggle);
+  modifierLoop(props.character.gear);
+  modifierLoop(props.character.statistics.feats);
+  modifierLoop(props.character.introduction.traits);
 
   return modifiersHolder;
-});
-
-const buffs = computed(() => {
-  const buffsHolder = reactive({});
-
-  toggleKeys.value.forEach((button) => {
-    if (toggle[button].active) {
-      const bonusKeys = ref(Object.keys(toggle[button].bonus));
-      bonusKeys.value.forEach((key) => {
-        buffsHolder[key] = toggle[button].bonus[key];
-      });
-    }
-  });
-
-  return buffsHolder;
 });
 
 function formatBonus(bonus) {

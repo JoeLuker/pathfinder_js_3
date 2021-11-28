@@ -11,13 +11,20 @@ const sareah = reactive({
   introduction: {
     name: 'Sareah',
     race: 'half-elf',
-    trait: [
+    traits: [
       'oblivious',
       'less effort',
       'auspicious tattoo',
       'advantageous distraction',
       'reactionary',
       'fate\'s favored',
+      {
+        name: 'bluff trait (fill this later)',
+        bonusType: 'trait',
+        bonus: {
+          bluff: 2,
+        },
+      },
     ],
     class: [
       {
@@ -166,8 +173,7 @@ const sareah = reactive({
       intelligence: {
         pointBuy: 17,
         racial: 2,
-        enhancement: 6,
-        levelUp: 1,
+        levelUp: 2,
       },
       wisdom: {
         pointBuy: 13,
@@ -177,6 +183,13 @@ const sareah = reactive({
       },
     },
     feats: [
+      {
+        name: 'Skill Focus (Bluff)',
+        bonusType: 'untyped',
+        bonus: {
+          bluff: 2,
+        },
+      },
       'Accursed Hex',
       'Improved Initiative',
       // 'Spell Focus (Enchantment)',
@@ -202,12 +215,6 @@ const sareah = reactive({
         modifier: [{
           name: 'trait',
           bonus: 1,
-        }, {
-          name: 'skill focus',
-          bonus: 3,
-        }, {
-          name: 'mwk tools',
-          bonus: 2,
         },
         ],
       },
@@ -380,9 +387,32 @@ const sareah = reactive({
   specialAbilities: '',
   gear: {
     'Headband of Vast Intellect +6': {
-      bonusType: 'enchancement',
+      bonusType: 'enhancement',
+      cost: 0,
       bonus: {
         intelligence: 6,
+      },
+    },
+    'Belt of Con +2': {
+      bonusType: 'enhancement',
+      cost: 0,
+      bonus: {
+        constitution: 2,
+      },
+    },
+    'Cloak of Resistance +5': {
+      bonusType: 'resistance',
+      cost: 25000,
+      bonus: {
+        fortitude: 2,
+        reflex: 2,
+        will: 2,
+      },
+    },
+    'Masterwork Tools (Bluff)': {
+      bonusType: 'circumstance',
+      bonus: {
+        bluff: 2,
       },
     },
   },
