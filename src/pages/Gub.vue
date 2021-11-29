@@ -160,8 +160,11 @@ const gub = reactive({
     ],
     ranged: [
       {
-        name: 'generic ranged attack',
-        attack: 0,
+        name: 'Goblinbone Longbow',
+        attack: 1,
+        dieCount: 1,
+        dieSize: 6,
+        damage: 1,
       },
     ],
   },
@@ -465,6 +468,14 @@ const gub = reactive({
         dexterity: 6,
       },
     }, {
+      name: 'Gub\'s Strength',
+      bonusType: 'enhancement',
+      active: false,
+      duration: 1,
+      bonus: {
+        strength: 6,
+      },
+    }, {
       name: 'Gub\'s Reduce Person',
       bonusType: 'size',
       active: false,
@@ -473,6 +484,28 @@ const gub = reactive({
         strength: -2,
         dexterity: 4,
         size: 1,
+      },
+    }, {
+      name: 'Gub\'s Tiny MPII',
+      bonusType: 'size',
+      active: false,
+      duration: 1,
+      bonus: {
+        strength: -2,
+        dexterity: 6,
+        size: 1,
+        ac: 1,
+      },
+    }, {
+      name: 'Gub\'s Large MPII',
+      bonusType: 'size',
+      active: false,
+      duration: 1,
+      bonus: {
+        strength: 6,
+        dexterity: -2,
+        size: -2,
+        ac: 4,
       },
     },
   ],

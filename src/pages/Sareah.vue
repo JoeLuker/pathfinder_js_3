@@ -200,7 +200,6 @@ const sareah = reactive({
       },
       constitution: {
         pointBuy: 14,
-        enhancement: 2,
       },
       intelligence: {
         pointBuy: 17,
@@ -292,7 +291,7 @@ const sareah = reactive({
       },
       knowledge: {
         arcana: {
-          ranks: 1,
+          ranks: 8,
           ability: 'intelligence',
         },
         dungeoneering: {
@@ -510,6 +509,23 @@ const sareah = reactive({
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
+BaseSheet {
+//display: flex;
+//flex-direction: row;
+  text-shadow: 2px 2px 4px #000000;
+  color: white;
+  text-align: left;
+  align-items: baseline;
+  padding: 1vmin;
+  background-image: url("../assets/sareah_placeholder.png");
+  background-repeat: no-repeat;
+
+  background-size: 100vmax;
+  background-position: 50% 50%;
+  background-attachment: fixed;
+  justify-content: space-between;
+
+}
 </style>

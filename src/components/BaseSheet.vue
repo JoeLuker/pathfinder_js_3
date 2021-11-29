@@ -162,7 +162,6 @@
               <span v-text="formatBonus(option.damage)"/>
               <span v-text="')'"/>
             </span>
-
           </span>
         </div>
 
@@ -173,7 +172,13 @@
             <span v-text="'&nbsp;'"/>
             <span v-text="formatBonus(option.attack)"/>
             <span v-if="option.damage || option.dieCount">
+              <span v-text="'&nbsp;'"/>
+              <span v-text="'('"/>
+              <span v-text="option.dieCount"/>
+              <span v-text="'d'"/>
+              <span v-text="option.dieSize"/>
               <span v-text="formatBonus(option.damage)"/>
+              <span v-text="')'"/>
             </span>
 
           </span>
@@ -1185,7 +1190,7 @@ const myTrackColor = computed(() => `${myColor.value}-3`);
   text-align: left;
   align-items: baseline;
   padding: 1vmin;
-  //background-image: url("../assets/Immogen_single.png");
+  background-image: url("../assets/sareah_placeholder.png");
   background-repeat: no-repeat;
 
   background-size: 100vmax;
