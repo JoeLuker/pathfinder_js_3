@@ -9,7 +9,7 @@ import { reactive } from 'vue';
 const gub = reactive({
   introduction: {
     name: 'gub the great',
-    race: 'monkey goblin',
+    heritage: 'monkey goblin',
     heritageTraits: [
       {
         name: 'Gublin!',
@@ -39,14 +39,14 @@ const gub = reactive({
     class: [{
       archetype: ['brown-fur transmuter'],
       name: 'arcanist',
-      level: 8,
+      level: 9,
       hitDie: 6,
       bab: 1 / 2,
       first: true,
       skillRanks: 2,
       classSkills: ['appraise', 'craft', 'fly', 'knowledge', 'lingustics', 'profession', 'spellcraft', 'use magic device'],
       favored: {
-        hp: 8,
+        hp: 9,
         skill: 0,
         race: {
           'monkey goblin': 0,
@@ -59,9 +59,10 @@ const gub = reactive({
       },
       spells: {
         '4th': {
-          slots: 3,
+          slots: 4,
           prepared: [
             'remove curse',
+            'monstrous physique II',
           ],
         },
         '3rd': {
@@ -69,6 +70,7 @@ const gub = reactive({
           prepared: [
             'haste',
             'fly',
+            '???',
           ],
         },
         '2nd': {
@@ -77,7 +79,7 @@ const gub = reactive({
             'cat\'s grace',
             'bull\'s strength',
             'alter self',
-
+            '???',
           ],
         },
         '1st': {
@@ -211,7 +213,7 @@ const gub = reactive({
     ],
     skills: {
       acrobatics: {
-        ranks: 4,
+        ranks: 8,
         ability: 'dexterity',
       },
       appraise: {
@@ -235,7 +237,7 @@ const gub = reactive({
         ability: 'charisma',
       },
       'disable device': {
-        ranks: 4,
+        ranks: 8,
         ability: 'dexterity',
       },
       disguise: {
@@ -243,7 +245,7 @@ const gub = reactive({
         ability: 'charisma',
       },
       'escape artist': {
-        ranks: 4,
+        ranks: 8,
         ability: 'dexterity',
       },
       fly: {
@@ -264,7 +266,7 @@ const gub = reactive({
       },
       knowledge: {
         arcana: {
-          ranks: 1,
+          ranks: 8,
           ability: 'intelligence',
         },
         dungeoneering: {
@@ -329,15 +331,15 @@ const gub = reactive({
         ability: 'wisdom',
       },
       'slight of hand': {
-        ranks: 4,
+        ranks: 8,
         ability: 'dexterity',
       },
       spellcraft: {
-        ranks: 4,
+        ranks: 8,
         ability: 'intelligence',
       },
       stealth: {
-        ranks: 4,
+        ranks: 8,
         ability: 'dexterity',
       },
       survival: {
@@ -349,7 +351,7 @@ const gub = reactive({
         ability: 'strength',
       },
       'use magic device': {
-        ranks: 4,
+        ranks: 8,
         ability: 'charisma',
       },
     },
@@ -358,6 +360,14 @@ const gub = reactive({
   },
   specialAbilities: '',
   gear: [
+    {
+      name: 'Cracked Pale Green Prism',
+      bonusType: 'competence bonus',
+      cost: 4000,
+      bonus: {
+        saves: 1,
+      },
+    },
     {
       name: 'Headband of Vast Intellect +4/+4',
       bonusType: 'enhancement',
@@ -376,20 +386,20 @@ const gub = reactive({
       },
     },
     {
-      name: 'Cloak of Resistance +2',
+      name: 'Cloak of Resistance +5',
       bonusType: 'resistance',
       cost: 25000,
       bonus: {
-        saves: 2,
+        saves: 5,
       },
     },
     {
-      name: 'Mythril Buckler +1',
+      name: 'Mythril Buckler +3',
       bonusType: 'shield',
       cost: 0,
       bonus: {
-        ac: 2,
-        ffAC: 2,
+        ac: 4,
+        ffAC: 4,
       },
     },
     {
@@ -456,8 +466,8 @@ const gub = reactive({
       active: true,
       duration: 0,
       bonus: {
-        ac: 3,
-        ffAC: 3,
+        ac: 4,
+        ffAC: 4,
       },
     }, {
       name: 'Gub\'s Grace',

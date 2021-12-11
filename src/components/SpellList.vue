@@ -16,7 +16,9 @@
           <span v-if="level !== 'Cantrips'
           && level !== 'Orisons'"> ({{ spellList.slots }}/day)</span>
         </b>
+        <span v-text="'&nbsp;'"/>
         <span>—</span>
+        <span v-text="'&nbsp;'"/>
         <i v-for="(spell, index) in spellList.prepared" v-bind:key="index">
           <span v-bind:style="{ color: fuck}"
                 v-on:click="emit('spellSubmit', spell)">{{ spell }}</span>

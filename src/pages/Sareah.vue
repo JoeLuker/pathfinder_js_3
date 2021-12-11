@@ -46,7 +46,7 @@ const sareah = reactive({
       {
         archetype: ['ley-line gaurdian'],
         name: 'witch',
-        level: 8,
+        level: 9,
         hitDie: 6,
         bab: 1 / 2,
         first: true,
@@ -56,7 +56,7 @@ const sareah = reactive({
           hp: 3,
           skill: 0,
           race: {
-            'half-elf': 8,
+            'half-elf': 6,
           },
         },
         saves: {
@@ -64,21 +64,24 @@ const sareah = reactive({
           reflex: false,
           will: true,
         },
-        casterLevel: 8,
+        casterLevel: 9,
         casting: 'spontanious',
         spells: {
           '4th': {
-            slots: 5,
+            slots: 6,
             prepared: [
               'enervation',
+              'confusion',
             ],
           },
           '3rd': {
-            slots: 7,
+            slots: 8,
             prepared: [
               'suggestion',
               'lightning bolt',
               'bestow curse',
+              '???',
+              '???',
             ],
           },
           '2nd': {
@@ -87,14 +90,14 @@ const sareah = reactive({
               'lipstitch',
               'hold person',
               'web',
-              'enthrall',
+              '???',
               'limp lash',
               'zone of truth',
-
+              '???',
             ],
           },
           '1st': {
-            slots: 9,
+            slots: 8,
             prepared: [
               'murderous command',
               'charm person',
@@ -103,6 +106,7 @@ const sareah = reactive({
               'beguiling gift',
               'ill omen',
               'ray of enfeeblement',
+              '???',
             ],
           },
           Cantrips: {
@@ -238,7 +242,7 @@ const sareah = reactive({
     ],
     skills: {
       acrobatics: {
-        ranks: 4,
+        ranks: 9,
         ability: 'dexterity',
       },
       appraise: {
@@ -246,7 +250,7 @@ const sareah = reactive({
         ability: 'intelligence',
       },
       bluff: {
-        ranks: 4,
+        ranks: 9,
         ability: 'intelligence',
       },
       climb: {
@@ -258,7 +262,7 @@ const sareah = reactive({
         ability: 'intelligence',
       },
       diplomacy: {
-        ranks: 4,
+        ranks: 9,
         ability: 'intelligence',
       },
       'disable device': {
@@ -323,7 +327,7 @@ const sareah = reactive({
           ability: 'intelligence',
         },
         planes: {
-          ranks: 1,
+          ranks: 8,
           ability: 'intelligence',
         },
         religion: {
@@ -360,7 +364,7 @@ const sareah = reactive({
         ability: 'dexterity',
       },
       spellcraft: {
-        ranks: 4,
+        ranks: 9,
         ability: 'intelligence',
       },
       stealth: {
@@ -372,7 +376,7 @@ const sareah = reactive({
         ability: 'wisdom',
       },
       swim: {
-        ranks: 1,
+        ranks: 8,
         ability: 'strength',
       },
       'use magic device': {
@@ -386,6 +390,24 @@ const sareah = reactive({
   specialAbilities: '',
   gear: [
     {
+      name: 'Cracked Pale Green Prism',
+      bonusType: 'competence bonus',
+      cost: 4000,
+      bonus: {
+        saves: 1,
+      },
+    },
+    {
+      name: 'Dusty Rose Prism Ioun Stone',
+      bonusType: 'insight',
+      cost: 5000,
+      bonus: {
+        ac: 1,
+        ffAC: 1,
+        touchAC: 1,
+      },
+    },
+    {
       name: 'Headband of Vast Intellect +6',
       bonusType: 'enhancement',
       cost: 0,
@@ -394,9 +416,17 @@ const sareah = reactive({
       },
     },
     {
-      name: 'Belt of Con +2',
+      name: 'Belt of Dex +6',
       bonusType: 'enhancement',
       cost: 0,
+      bonus: {
+        dexterity: 6,
+      },
+    },
+    {
+      name: 'Ioun Stone Con +2',
+      bonusType: 'enhancement',
+      cost: 8000,
       bonus: {
         constitution: 2,
       },
@@ -410,17 +440,16 @@ const sareah = reactive({
       },
     },
     {
-      name: 'Mythril Buckler +2',
+      name: 'Mythril Buckler +5',
       bonusType: 'shield',
-      cost: 0,
+      cost: 26000,
       bonus: {
-        ac: 3,
-        ffAC: 3,
+        ac: 6,
+        ffAC: 6,
       },
     },
     {
       name: 'Ring of Protection +1',
-
       bonusType: 'deflection',
       cost: 2000,
       bonus: {
@@ -482,16 +511,8 @@ const sareah = reactive({
       active: true,
       duration: 0,
       bonus: {
-        ac: 3,
-        ffAC: 3,
-      },
-    }, {
-      name: 'Gub\'s Grace',
-      bonusType: 'enhancement',
-      active: false,
-      duration: 1,
-      bonus: {
-        dexterity: 6,
+        ac: 4,
+        ffAC: 4,
       },
     }, {
       name: 'Gub\'s Reduce Person',
@@ -502,6 +523,19 @@ const sareah = reactive({
         strength: -2,
         dexterity: 4,
         size: 1,
+      },
+    },
+    {
+      name: 'Gub\'s Monstrous Physique II',
+      bonusType: 'size',
+      active: false,
+      duration: 1,
+      bonus: {
+        strength: -2,
+        dexterity: 6,
+        size: 2,
+        ac: 1,
+        ffAC: 1,
       },
     },
   ],

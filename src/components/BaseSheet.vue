@@ -13,12 +13,14 @@
         <div id="xp" v-text="xp"></div>
 
         <div>
-          <span id="race" class="capitalize" v-text="character.introduction.race"/>
+          <span id="race" class="capitalize" v-text="character.introduction.heritage"/>
+          <span v-text="'&nbsp;'"/>
+          <span v-if="character.introduction.class[0].gestalt" v-text="'Gestalt'"/>
           <span v-text="'&nbsp;'"/>
           <span id="class" class="capitalize">
             {{
               formatList(character.introduction.class
-                , ['gestalt', 'archetype', 'name', 'level'])
+                , ['archetype', 'name', 'level'])
             }}
           </span>
         </div>
@@ -376,11 +378,6 @@
       <!--        />-->
 
       <!--      </div>-->
-      <q-card v-if="spellRef" style="background: rgba(0,0,0,50%)">
-        <q-card-section class="text-h4">{{ spellRef.name }}</q-card-section>
-        <Spell :spell="spellRef"/>
-      </q-card>
-
       <div class="q-pa-md" style="">
         <q-btn
           v-morph:btn:mygroup:300.resize="morphGroupModel"
@@ -404,7 +401,7 @@
             <q-list class="column" id="buttons">
               <q-item-section v-for="(bonus, index) in toggle"
                               :key="index" class="toggle capitalize"
-                   v-bind:style="{ 'background-color' : bgColor(bonus.duration)}">
+                              v-bind:style="{ 'background-color' : bgColor(bonus.duration)}">
                 <q-toggle
                   v-model="bonus.active"
                   :label="bonus.name"
@@ -418,6 +415,11 @@
         </q-card>
 
       </div>
+
+      <q-card v-if="spellRef" style="background: rgba(0,0,0,50%)">
+        <q-card-section class="text-h4">{{ spellRef.name }}</q-card-section>
+        <Spell :spell="spellRef"/>
+      </q-card>
 
     </div>
     <!--        <q-table-->
@@ -667,19 +669,16 @@ const baseAtk = computed(() => {
 
   let maxBAB = 0;
 
-  const CharClasses = props.character.introduction.class;
+  const CharClasses = ref(props.character.introduction.class);
 
-  CharClasses.forEach((charClass) => {
-    if (charClass.name !== 'gestalt') {
-      bab += Math.floor(charClass.level * charClass.bab);
+  CharClasses.value.forEach((charClass) => {
+    if (charClass.gestalt === true) {
+      maxBAB = Math.max(Math.floor(charClass.level * charClass.bab), maxBAB);
     } else {
-      charClass.gestalt.forEach((gestaltClass) => {
-        maxBAB = Math.max(gestaltClass.hitDie, maxBAB);
-      });
+      bab += Math.floor(charClass.level * charClass.bab);
     }
-    bab += maxBAB;
-    maxBAB = 0;
   });
+  bab += maxBAB;
 
   return bab;
 });
@@ -695,7 +694,8 @@ const cmd = computed(() => 10 + abilityMods.value.dexterity
   + abilityMods.value.strength + baseAtk.value
   + sizeModifier.value);
 // eslint-disable-next-line max-len
-const level = computed(() => props.character.introduction.class.reduce(((accumulator, cur) => accumulator + cur.level), 0));
+const level = computed(() => props.character.introduction.class.reduce(((accumulator, cur) => ((cur.gestalt ?? false)
+  ? Math.max(accumulator, cur.level) : accumulator + cur.level)), 0));
 
 const skills = computed(() => {
   const skillRanks = props.character.statistics.skills;
@@ -826,7 +826,7 @@ const maxHP = computed(() => {
   const CharClasses = props.character.introduction.class;
 
   CharClasses.forEach((charClass) => {
-    if (charClass.name !== 'gestalt') {
+    if (charClass.gestalt !== true) {
       if (charClass.first) {
         hitPoints += charClass.hitDie;
         hitPoints += (charClass.level - 1) * Math.ceil((charClass.hitDie + 1) / 2);
@@ -839,9 +839,7 @@ const maxHP = computed(() => {
         }
       }
     } else {
-      charClass.gestalt.forEach((gestaltClass) => {
-        maxHitDie = Math.max(gestaltClass.hitDie, maxHitDie);
-      });
+      maxHitDie = Math.max(charClass.hitDie, maxHitDie);
     }
   });
 
@@ -849,7 +847,6 @@ const maxHP = computed(() => {
     hitPoints = maxHitDie * level.value;
   }
 
-  // eslint-disable-next-line no-unused-vars
   hitPoints += level.value * abilityMods.value.constitution;
 
   return hitPoints;
@@ -878,20 +875,32 @@ const savingThrows = computed(() => {
 
   const saveKeys = Object.keys(props.character.defense.saveAbilityScore);
 
+  const charClasses = ref(props.character.introduction.class);
+
+  const maxCharSaves = {
+    fortitude: false,
+    reflex: false,
+    will: false,
+  };
+
   saveKeys.forEach((save) => {
-    if ((props.character.introduction.class[0].saves[save] ?? false)
-    ) {
+    charClasses.value.forEach((charClass) => {
+      maxCharSaves[save] = (charClass.saves[save] || maxCharSaves[save]);
+    });
+  });
+
+  saveKeys.forEach((save) => {
+    if (maxCharSaves[save] ?? false) {
       totalSaves[save] += 2;
       totalSaves[save] += Math.floor(level.value / 2);
     } else {
       totalSaves[save] += Math.floor(level.value / 3);
     }
-
     totalSaves[save] += modifiers.value[save] ?? 0;
-
     totalSaves[save] += abilityMods.value[props.character.defense.saveAbilityScore[save]];
     totalSaves[save] += allBonus;
   });
+
   return totalSaves;
 });
 

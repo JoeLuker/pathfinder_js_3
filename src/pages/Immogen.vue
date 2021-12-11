@@ -12,13 +12,13 @@ const immogen = computed(() => {
     name: 'Immogen',
     solo: true,
     race: 'human',
-    trait: [
+    heritageTraits: [],
+    traits: [
       'fate\'s favored',
       'reactionary',
     ],
     class: [
       {
-
         archetype: ['archaeologist'],
         name: 'bard',
         level: 13,
@@ -55,8 +55,8 @@ const immogen = computed(() => {
           },
         },
         saves: {
-          fort: false,
-          ref: true,
+          fortitude: false,
+          reflex: true,
           will: true,
         },
         casterLevel: 13,
@@ -126,7 +126,7 @@ const immogen = computed(() => {
           },
 
         },
-        gestalt: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+        gestalt: true,
       },
       {
         archetype: ['dual-cursed'],
@@ -156,8 +156,8 @@ const immogen = computed(() => {
           },
         },
         saves: {
-          fort: false,
-          ref: false,
+          fortitude: false,
+          reflex: false,
           will: true,
         },
         casterLevel: 13,
@@ -253,7 +253,7 @@ const immogen = computed(() => {
             '6th': 'contingency',
           },
         ],
-        gestalt: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+        gestalt: true,
       },
     ],
     alignment: 'CG',
@@ -273,8 +273,8 @@ const immogen = computed(() => {
     sr: '',
     weaknesses: ['cold'],
     saveAbilityScore: {
-      fort: 'constitution',
-      ref: 'charisma',
+      fortitude: 'constitution',
+      reflex: 'charisma',
       will: 'wisdom',
     },
   };
@@ -333,23 +333,26 @@ const immogen = computed(() => {
         usesPerDay: 1,
       },
     ],
-    melee: {
-      'Stella\'s Holy Cutlass': {
+    melee: [
+      {
+        name: 'Stella\'s Holy Cutlass',
+        weaponGroup: 'light',
         attack: 4,
         dieCount: 1,
         dieSize: 6,
         damage: 4,
         critRange: 15,
       },
-    },
-    ranged: {
-      'Furies\' Flaming Burst Longbow': {
+    ],
+    ranged: [
+      {
+        name: 'Furies\' Flaming Burst Longbow',
         attack: 4,
         dieCount: 1,
         dieSize: 8,
         damage: 4,
       },
-    },
+    ],
   };
   const tactics = '';
   const statistics = {
@@ -644,25 +647,26 @@ const immogen = computed(() => {
   //   treasure: '',
   // },
   const miscellaneous = '';
-  const toggle = {
-    'shield of faith': {
-      bonusType: 'deflection',
+  const toggle = [
+    {
+      name: 'Haste',
+      bonusType: 'dodge',
       active: false,
-      duration: 1,
+      duration: 2,
       bonus: {
-        ac: 4,
+        attackRolls: 1,
+        reflex: 1,
+        ac: 1,
+        touchAC: 1,
       },
     },
-    'power attack': {
-      active: true,
-      duration: 3,
-
-    },
-    holy: {
+    {
+      name: 'holy',
       active: false,
       duration: 3,
     },
-    heroism: {
+    {
+      name: 'heroism',
       bonusType: 'morale',
       duration: 2,
       active: true,
@@ -671,8 +675,8 @@ const immogen = computed(() => {
         saves: 2,
         skills: 2,
       },
-    },
-    'archeologist\'s luck': {
+    }, {
+      name: 'archeologist\'s luck',
       bonusType: 'luck',
       duration: 1,
       active: true,
@@ -683,18 +687,7 @@ const immogen = computed(() => {
         weaponDamage: 4,
       },
     },
-    Haste: {
-      bonusType: 'Dodge',
-      active: false,
-      duration: 2,
-      bonus: {
-        attackRolls: 1,
-        ref: 1,
-        ac: 1,
-      },
-
-    },
-  };
+  ];
 
   return {
     introduction,

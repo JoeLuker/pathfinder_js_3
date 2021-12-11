@@ -136,10 +136,44 @@
         </q-step>
         <q-step
           :name="4"
-          title="Create an ad group"
+          title="Alignment"
           caption="Optional"
           icon="create_new_folder"
           :done="step > 4"
+          :header-nav="true"
+        >
+          <q-list class="justify-center">
+            <q-item class="alignment">
+              <q-item-section>
+                  <q-btn-toggle v-model="alignment" val="LG" label="Lawful Good"
+                                :options="[
+        {label: 'Lawful Good', value: 'LG'},
+        {label: 'Neutral Good', value: 'NG'},
+        {label: 'Chaotic Good', value: 'three'}
+      ]"/>
+                  <q-btn-toggle v-model="alignment" val="LN" label="Lawful Neutral"
+                                :options="[
+        {label: 'Lawful Neutral', value: 'LN'},
+        {label: 'True Neutral', value: 'N'},
+        {label: 'Chaotic Neutral', value: 'CN'}
+      ]"/>
+                  <q-btn-toggle v-model="alignment" val="LE" label="Lawful Evil"
+                                :options="[
+        {label: 'Lawful Evil', value: 'LE'},
+        {label: 'Neutral Evil', value: 'NE'},
+        {label: 'Chaotic Evil', value: 'CE'}
+      ]"/>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-step>
+
+        <q-step
+          :name="5"
+          title="Create an ad group"
+          caption="Optional"
+          icon="create_new_folder"
+          :done="step > 5"
           :header-nav="true"
 
         >
@@ -263,6 +297,8 @@ const pointsSpent = computed(() => {
 });
 const pointsSpentColor = computed(() => (pointsSpent.value > pointBuyOptions[pointBuyChoice.value] ? 'red' : 'brown-10'));
 
+const alignment = ref('op1');
+
 function loadClass() {
   return api.get('/class')
     .then((response) => response.data)
@@ -275,6 +311,7 @@ function loadClass() {
       });
     });
 }
+
 const classRef = reactive({});
 loadClass()
   .then((response) => {
@@ -303,6 +340,7 @@ function loadHeritage() {
       });
     });
 }
+
 const heritageRef = reactive({});
 loadHeritage()
   .then((response) => {
@@ -320,6 +358,7 @@ const heritageNames = computed(() => {
 });
 
 const archetypeRef = reactive({});
+
 function loadArchetype() {
   return api.get('/archetype')
     .then((response) => response.data)
@@ -332,6 +371,7 @@ function loadArchetype() {
       });
     });
 }
+
 loadArchetype()
   .then((response) => {
     response.forEach((row) => {
@@ -456,6 +496,19 @@ function onReset() {
 </script>
 
 <style lang="scss">
+
+$box: 7em;
+
+.alignment .q-btn {
+  width: $box;
+  height: $box;
+ }
+
+.q-btn-group {
+  width: 3 * $box;
+  box-shadow: none;
+  border: $primary;
+}
 
 .str-slider {
   width: var(--str-width);
