@@ -68,6 +68,11 @@ const linksList = [
     link: '/#/Gub',
   },
   {
+    title: 'Flafaffiel',
+    icon: 'search',
+    link: '/#/Flafaffiel',
+  },
+  {
     title: 'New Search',
     icon: 'search',
     link: '/#/NewSearch',

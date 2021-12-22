@@ -14,8 +14,7 @@
 
         <div>
           <span id="race" class="capitalize" v-text="character.introduction.heritage"/>
-          <span v-text="'&nbsp;'"/>
-          <span v-if="character.introduction.class[0].gestalt" v-text="'Gestalt'"/>
+          <span v-if="character.introduction.class[0].gestalt" v-text="' Gestalt'"/>
           <span v-text="'&nbsp;'"/>
           <span id="class" class="capitalize">
             {{
@@ -167,7 +166,7 @@
           </span>
         </div>
 
-        <div id="ranged" class="text-capitalize">
+        <div v-if="character.offense.ranged" id="ranged" class="text-capitalize">
           <b>Ranged </b>
           <span v-for="(option, index) in ranged" :key="index">
             <span v-text="option.name"/>
@@ -191,7 +190,7 @@
           <b>Reach </b><span id="reach"> {{ character.offense.reach }} ft.; </span>
         </div>
 
-        <div id="specialAttacks">
+        <div v-if="character.offense.specialAttacks" id="specialAttacks">
           <b>Special Attacks </b>
           <span v-for="(attack, index) in character.offense.specialAttacks" :key="index"
                 class="special-attacks capitalize">
@@ -327,13 +326,27 @@
 
       </q-expansion-item>
 
-      <q-expansion-item v-if="character.specialAbilities.active" id="special abilities"
+      <q-expansion-item v-if="character.specialAbilities" id="special abilities"
                         style="padding: 0"
                         expand-separator
-                        default-opened
                         dense
                         header-class="bg-primary text-white"
                         label="SPECIAL ABILITIES">
+        <q-card-section>
+        <q-expansion-item v-for="(item, index) in character.specialAbilities"
+                          :key="index"
+                          style="padding: 0"
+                          expand-separator
+                          dense
+                          header-class="bg-primary text-white"
+                          :label="item.header">
+          <p v-for="(descItem, descIndex) in item.description" :key="descIndex">
+            <span v-text="descItem" />
+            <br>
+            <br>
+          </p>
+        </q-expansion-item>
+        </q-card-section>
       </q-expansion-item>
 
       <q-expansion-item v-if="character.gear.active" id="gear"
@@ -380,7 +393,7 @@
       <!--      </div>-->
       <div class="q-pa-md" style="">
         <q-btn
-          v-morph:btn:mygroup:300.resize="morphGroupModel"
+          v-morph:btn:mygroup:500.tween="morphGroupModel"
           class="q-ma-md"
           fab
           color="primary"
@@ -390,7 +403,7 @@
         />
 
         <q-card
-          v-morph:card1:mygroup:500.resize="morphGroupModel"
+          v-morph:card1:mygroup:500.tween="morphGroupModel"
           class="q-ma-md bg-primary text-white"
           style="width: 300px; border-top-left-radius: 2em"
         >
@@ -427,7 +440,6 @@
     <!--          :rows="modifierSource.value"-->
     <!--          row-key="name"-->
     <!--        />-->
-
   </q-page>
 </template>
 
@@ -436,8 +448,6 @@ import {
   computed, ref, reactive, defineProps,
 } from 'vue';
 import SpellList from 'src/components/SpellList.vue';
-// import FullText from 'src/components/FullText';
-// import Info from 'src/components/Info';
 import Spell from 'src/components/Spell.vue';
 import { api } from 'boot/axios';
 import { useQuasar } from 'quasar';
@@ -754,7 +764,6 @@ const skills = computed(() => {
   const keys = Object.keys(totalSkills);
 
   const summarySkills = {
-    knowledge: {},
   };
 
   keys.forEach((skillKey) => {
@@ -779,6 +788,7 @@ const skills = computed(() => {
           totalSkills.knowledge[knowledgeSkillKey] += level.value;
         }
         if (skillRanks.knowledge[knowledgeSkillKey].ranks >= 1 || props.character.specialAbilities.abilities?.includes('Bardic Knowledge')) {
+          if (!summarySkills.knowledge) summarySkills.knowledge = {};
           summarySkills.knowledge[knowledgeSkillKey] = totalSkills.knowledge[knowledgeSkillKey];
         }
       });
@@ -1110,14 +1120,14 @@ function formatSkills(myObj) {
 
   const arrSize = keys.length;
 
-  let comparer = 0;
+  // let comparer = 0;
 
   for (let index = 0; index < arrSize; index += 1) {
     if (keys[index] === 'knowledge') {
       list += `${keys[index]} (${formatSkills(myObj[keys[index]])})`;
-      comparer += 1;
+      // comparer += 1;
     } else if (myObj.name === 'knowledge' && myObj[keys[index]] !== myObj[keys[0]]) {
-      comparer += 1;
+      // comparer += 1;
     } else {
       list += `${keys[index]} `;
       list += formatBonus(myObj[keys[index]]);
@@ -1125,9 +1135,6 @@ function formatSkills(myObj) {
     if (index !== arrSize - 1) list += ', ';
   }
 
-  if (comparer === 0) {
-    return formatBonus(myObj[keys[0]]);
-  }
   return list;
 }
 
@@ -1199,8 +1206,6 @@ const myTrackColor = computed(() => `${myColor.value}-3`);
   text-align: left;
   align-items: baseline;
   padding: 1vmin;
-  background-image: url("../assets/sareah_placeholder.png");
-  background-repeat: no-repeat;
 
   background-size: 100vmax;
   background-position: 50% 50%;

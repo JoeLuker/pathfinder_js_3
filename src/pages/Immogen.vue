@@ -62,13 +62,19 @@ const immogen = computed(() => {
         casterLevel: 13,
         casting: 'spontaneous',
         spells: {
-
+          '5th': {
+            slots: 4,
+            prepared: [
+              'Heroism, Greater',
+            ],
+          },
           '4th': {
             slots: 4,
             prepared: [
               'Invisibility, Greater',
               'Dimension Door',
               'Modify Memory',
+              'Shield of the Dawnflower',
             ],
           },
           '3rd': {
@@ -87,7 +93,7 @@ const immogen = computed(() => {
           '2nd': {
             slots: 7,
             prepared: [
-              'Heroism',
+              '???',
               'Gallant Inspiration',
               'Blur',
               'Invisibility',
@@ -167,6 +173,7 @@ const immogen = computed(() => {
             slots: 4,
             prepared: [
               'Heal',
+              'Dispel Magic, Greater',
             ],
           },
 
@@ -176,6 +183,7 @@ const immogen = computed(() => {
               'Slay Living',
               'Plane Shift',
               'Commune',
+              'Flame Strike',
             ],
           },
           '4th': {
@@ -666,14 +674,14 @@ const immogen = computed(() => {
       duration: 3,
     },
     {
-      name: 'heroism',
+      name: 'heroism, greater',
       bonusType: 'morale',
       duration: 2,
       active: true,
       bonus: {
-        attackRolls: 2,
-        saves: 2,
-        skills: 2,
+        attackRolls: 4,
+        saves: 4,
+        skills: 4,
       },
     }, {
       name: 'archeologist\'s luck',
@@ -706,5 +714,21 @@ const immogen = computed(() => {
 </script>
 
 <style scoped>
+
+#page {
+  text-shadow: 2px 2px 4px #000000;
+  color: white;
+  text-align: left;
+  align-items: baseline;
+  padding: 1vmin;
+  background-image: url("../assets/Immogen_card.png");
+  background-repeat: no-repeat;
+
+  background-size: 100vmax;
+  background-position: 50% 50%;
+  background-attachment: fixed;
+  justify-content: space-between;
+
+}
 
 </style>

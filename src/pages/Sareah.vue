@@ -53,7 +53,7 @@ const sareah = reactive({
         skillRanks: 2,
         classSkills: ['craft', 'bluff', 'diplomacy', 'fly', 'heal', 'arcana', 'history', 'nature', 'history', 'planes', 'profession', 'spellcraft', 'use magic device'],
         favored: {
-          hp: 3,
+          hp: 4,
           skill: 0,
           race: {
             'half-elf': 6,
@@ -545,9 +545,7 @@ const sareah = reactive({
 
 <style scoped lang="scss">
 
-BaseSheet {
-//display: flex;
-//flex-direction: row;
+#page {
   text-shadow: 2px 2px 4px #000000;
   color: white;
   text-align: left;
