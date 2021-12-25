@@ -2,14 +2,12 @@
   <q-page class="fit" style="padding: 1em">
     <q-select v-model="table"
               :options="tablesRef"
-              debounce="500"
               @change="loadResults"
               label="Table"/>
 
     <q-input
       v-model="nameSearch"
       label="Name Search"
-      debounce="500"
       filled
       placeholder="Search"
       @change="loadResults"
@@ -22,7 +20,6 @@
     <q-input
       v-model="fullSearch"
       label="Full Text Search"
-      debounce="500"
       filled
       placeholder="Search"
       @change="loadResults"
@@ -49,7 +46,7 @@
         style="padding: .25em;"
         :header-style="`background:${groupColors[result.group] ?? 'brown'}`"
         expand-separator
-        :label="(result.name + tableOrder + result.cr + ' SLA Level: ' + result.SLA_Level)"
+        :label="(result.name + ' ' + tableOrder + ' ' + result[tableOrder])"
       >
         <q-card bordered>
           <PFItem v-if="table === 'item'" :pf-item="result"/>
