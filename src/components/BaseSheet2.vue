@@ -1,0 +1,873 @@
+<template>
+  <q-page class="q-gutter-lg fit row wrap justify-between items-start content-start" id="page">
+
+    <q-list id="stat-block">
+
+      <div id="introduction">
+
+        <div>
+          <div id="name" class="capitalize" v-text="character.introduction.name"></div>
+          <div id="cr" v-text="cr"></div>
+        </div>
+
+        <div id="xp" v-text="xp"></div>
+
+        <div>
+          <span id="race" class="capitalize" v-text="character.introduction.heritage"/>
+          <span v-if="character.introduction.class[0].gestalt" v-text="' Gestalt'"/>
+          <span v-text="'&nbsp;'"/>
+          <span id="class" class="capitalize">
+            {{
+              formatList(character.introduction.class
+                , ['archetype', 'name', 'level'])
+            }}
+          </span>
+        </div>
+
+        <div>
+          <span id="alignment" v-text="character.introduction.alignment"/>
+          <span v-text="'&nbsp;'"/>
+          <span id="size" class="capitalize">
+            {{ character.introduction.size }}
+          </span>
+          <span v-text="'&nbsp;'"/>
+          <span id="type">
+           {{ character.introduction.type }}
+          </span>
+          <span id="subtype">
+            ({{ formatList(character.introduction.subtype) }})
+          </span>
+
+        </div>
+
+        <div>
+          <b>Init </b><span id="initiative" v-text="formatBonus(initiative)"></span>
+          <b> Senses </b>
+          <span id="senses" v-text="formatList(character.introduction.senses)"/>
+          <span>; Perception {{ formatBonus(skills.totalSkills.perception) }}</span>
+
+        </div>
+
+        <div id="aura" v-text="character.introduction.aura"></div>
+
+      </div>
+
+      <q-expansion-item v-if="character.defense" id="defense"
+                        style="padding: 0"
+                        expand-separator
+                        default-opened
+                        dense
+                        header-class="bg-primary text-white"
+                        label="DEFENSE">
+        <q-item class="justify-between">
+          <q-item-section>
+            <div id="ac">
+              <b>AC</b> <span> {{ ac.default }}</span>
+              <span>, touch {{ ac.touch }}</span>
+              <span>, flat-footed {{ ac['flat-footed'] }}</span>
+              <span v-if="acBonuses && !acToggle" @click="acToggle = !acToggle" v-text="' (...)'"/>
+              <span v-if="acBonuses && acToggle" @click="acToggle = !acToggle"
+                    class="text-capitalize">
+              <span v-text="' ( '"/>
+              <span v-for="(value, name, index) in acBonuses" :key="index">
+                {{ formatBonus(value) }} {{ name }}
+                <span v-if="index !== Object.keys(acBonuses).length - 1">, </span>
+              </span>
+              <span v-text="')'"/>
+                </span>
+            </div>
+            <div id="hp">
+              <b>hp </b> <span>{{ currHP }}/{{ maxHP }}</span>
+            </div>
+            <div id="saving throws">
+              <b>Fort </b> <span id="fortitude" v-text="savingThrows.fortitude"/>
+              <b>, Ref </b> <span id="reflex" v-text="savingThrows.reflex"/>
+              <b>, Will </b> <span id="will" v-text="savingThrows.will"/>
+            </div>
+            <div>
+
+              <div id="defensive abilities" v-text="character.defensiveAbilities"></div>
+              <div id="dr" v-if="character.defense.dr">
+                <b>DR </b>
+                <span v-for="(drValue, drType, index) in character.defense.dr" :key="index">
+              {{ drValue }}/{{ drType }}
+            </span>
+              </div>
+              <div id="immune" v-text="character.immune"></div>
+              <div id="resist" v-text="character.resist"></div>
+              <div id="sr" v-text="character.sr"></div>
+
+            </div>
+            <div v-if="character.defense.weaknesses" id="weaknesses">
+              <b>Weaknesses </b>
+              <span class="capitalize">
+          {{ formatArray(character.defense.weaknesses) }}
+          </span>
+            </div>
+          </q-item-section>
+          <q-item-section>
+
+            <q-item>
+              <q-item-section>
+                <q-input
+                  v-model.number="damageTaken"
+                  type="number"
+                  :max="maxHP+abilityScores.constitution"
+                  filled
+                  style="max-width: 200px"
+                />
+              </q-item-section>
+              <q-item-section>
+                <q-knob
+                  show-value
+                  :min="-abilityScores.constitution"
+                  :max="Math.max(maxHP,maxHP-damageTaken)"
+                  :class="`text-${myTrackColor}`"
+                  v-model="currHP"
+                  size="50px"
+                  :color="myColor"
+                  :track-color="myTrackColor"
+                />
+              </q-item-section>
+            </q-item>
+          </q-item-section>
+
+        </q-item>
+
+      </q-expansion-item>
+
+      <q-expansion-item v-if="character.offense" id="offense"
+                        style="padding: 0"
+                        expand-separator
+                        default-opened
+                        dense
+                        header-class="bg-primary text-white"
+                        label="OFFENSE">
+
+        <div id="speed" v-if="character.offense.speed !== 30">
+          <b>Spd</b> <span> {{ character.offense.speed }} ft.</span>
+        </div>
+
+        <div id="melee" class="text-capitalize">
+          <b>Melee </b>
+          <span v-for="(option, index) in melee" :key="index">
+            <span v-text="option.name"/>
+            <span v-text="'&nbsp;'"/>
+            <span v-text="formatBonus(option.attack)"/>
+            <span v-if="option.damage || option.dieCount">
+              <span v-text="'&nbsp;'"/>
+              <span v-text="'('"/>
+              <span v-text="option.dieCount"/>
+              <span v-text="'d'"/>
+              <span v-text="option.dieSize"/>
+              <span v-text="formatBonus(option.damage)"/>
+              <span v-text="')'"/>
+            </span>
+          </span>
+        </div>
+        <div v-if="character.offense.ranged[0]" id="ranged" class="text-capitalize">
+          <b>Ranged </b>
+          <span v-for="(option, index) in ranged" :key="index">
+            <span v-text="option.name"/>
+            <span v-text="'&nbsp;'"/>
+            <span v-text="formatBonus(option.attack)"/>
+            <span v-if="option.damage || option.dieCount">
+              <span v-text="'&nbsp;'"/>
+              <span v-text="'('"/>
+              <span v-text="option.dieCount"/>
+              <span v-text="'d'"/>
+              <span v-text="option.dieSize"/>
+              <span v-text="formatBonus(option.damage)"/>
+              <span v-text="')'"/>
+            </span>
+
+          </span>
+        </div>
+
+        <div v-if="character.offense.space !== 5 || character.offense.reach !== 5">
+          <b>Space </b><span id="space"> {{ character.offense.space }} ft.; </span>
+          <b>Reach </b><span id="reach"> {{ character.offense.reach }} ft.; </span>
+        </div>
+
+        <div v-if="character.offense.specialAttacks" id="specialAttacks">
+          <b>Special Attacks </b>
+          <span v-for="(attack, index) in character.offense.specialAttacks" :key="index"
+                class="special-attacks capitalize">
+         {{ formatSpecial(attack) }}<span
+            v-if="index !== character.offense.specialAttacks.length - 1">, </span>
+          </span>
+        </div>
+
+        <div id="spell-likeAbilities" v-text="character.offense.spellLikeAbilities"></div>
+
+        <div id="supernaturalAbilities" v-if="character.offense.supernaturalAbilities">
+          <b @click="SupernaturalToggle = !SupernaturalToggle"> Supernatural Abilities </b>
+
+          <span v-show="!SupernaturalToggle">...</span>
+
+          <!--TODO-->
+          <span v-show="SupernaturalToggle">
+
+                      <span v-for="(attack, index) in character.offense.supernaturalAbilities"
+                            :key="index"
+                            class="special-attacks capitalize">
+         {{ formatSpecial(attack) }}
+                        <span
+                          v-if="index !== character.offense.supernaturalAbilities.length - 1"
+                        >, </span>
+          </span>
+
+          </span>
+        </div>
+
+        <div id="extraordinaryAbilities" v-if="character.offense.extraordinaryAbilities">
+          <b @click="ExtraordinaryToggle = !ExtraordinaryToggle"> Extraordinary Abilities </b>
+
+          <span v-show="!ExtraordinaryToggle">...</span>
+
+          <!--TODO-->
+          <span v-show="ExtraordinaryToggle">
+
+             <span v-for="(attack, index) in character.offense.extraordinaryAbilities"
+                   :key="index"
+                   class="special-attacks capitalize">
+         {{ formatSpecial(attack) }}<span
+               v-if="index !== character.offense.extraordinaryAbilities.length - 1"
+             >, </span>
+          </span>
+
+          </span>
+        </div>
+
+        <div id="spells" v-if="showSpells" class="capitalize">
+          <div v-for="(caster, index)
+          in (character.introduction.class)"
+               :key="index">
+            <SpellList v-bind:caster="caster"
+                       @spell-submit="loadSpell"/>
+          </div>
+
+        </div>
+
+      </q-expansion-item>
+
+      <q-expansion-item v-if="character.tactics" id="tactics">
+        <hr>
+        <span>TACTICS</span>
+        <hr>
+        <div id="before combat">
+          Before Combat: {{ character.tactics.beforeCombat }}
+        </div>
+        <div id="during combat">
+          During Combat: {{ character.tactics.duringCombat }}
+        </div>
+        <div id="morale">
+          Morale: {{ character.tactics.morale }}
+        </div>
+      </q-expansion-item>
+
+      <q-expansion-item v-if="character.statistics" id="statistics"
+                        style="padding: 0"
+                        expand-separator
+                        default-opened
+                        dense
+                        header-class="bg-primary text-white"
+                        label="STATISTICS">
+        <div id="ability scores">
+          <span v-for="(score, key, index) in abilityScores" v-bind:key="index">
+            <b class="capitalize"> {{ key.substr(0, 3) }}</b> {{ score }}
+            ({{
+              formatBonus(
+                abilityMods[key])
+            }})
+            <span v-if="index !== 5">, </span>
+          </span>
+        </div>
+        <div>
+          <b>Base Atk </b><span id="base atk" v-text="formatBonus(baseAtk)"/>;
+          <b>CMB </b><span id="cmb" v-text="formatBonus(cmb)"/>;
+          <b>CMD </b><span id="cmd" v-text="formatBonus(cmd)"/>;
+        </div>
+        <div>
+          <b @click="featToggle = !featToggle">Feats </b>
+          <span v-if="featToggle" id="feats" class="capitalize"
+                v-text="formatArray(character.statistics.feats)"/>
+          <span v-else>...</span>
+        </div>
+        <div>
+          <b @click="skillToggle = !skillToggle"> Skills </b>
+          <span v-if="skillToggle">
+            <span class="capitalize">
+                <span v-if="summarySkillToggle">
+                  <span class="capitalize">
+                    {{ formatSkills(skills.totalSkills) }}
+                  </span>
+                </span>
+                <span v-if="!summarySkillToggle">
+                  <span class="capitalize">
+                    {{ formatSkills(skills.summarySkills) }}
+                  </span>
+                </span>
+              <span>
+
+                <i v-if="!summarySkillToggle"
+                   @click="summarySkillToggle = true"> Show More Skills..</i>
+                <i v-if="summarySkillToggle"
+                   @click="summarySkillToggle = false"> Show Fewer Skills..</i>
+
+                </span>
+          </span>
+          </span>
+          <span v-if="!skillToggle">..</span>
+        </div>
+        <div id="languages" v-text="character.statistics.languages"></div>
+        <div id="sq" v-text="character.statistics.specialQualities"></div>
+
+      </q-expansion-item>
+
+      <q-expansion-item v-if="specialAbilities" id="special abilities"
+                        style="padding: 0"
+                        expand-separator
+                        default-opened
+                        dense
+                        header-class="bg-primary text-white"
+                        label="SPECIAL ABILITIES">
+        <q-card-section>
+          <q-expansion-item v-for="(item, index) in specialAbilities"
+                            :key="index"
+                            style="padding: 0"
+                            expand-separator
+                            dense
+                            header-class="bg-primary text-white"
+                            :label="item.header">
+            <p v-for="(descItem, descIndex) in item.description" :key="descIndex">
+              <span v-text="descItem"/>
+              <br>
+              <br>
+            </p>
+          </q-expansion-item>
+        </q-card-section>
+      </q-expansion-item>
+
+      <q-expansion-item v-if="character.gear.active" id="gear"
+                        style="padding: 0"
+                        expand-separator
+                        default-opened
+                        dense
+                        header-class="bg-primary text-white"
+                        label="GEAR">
+        <hr>
+        <span>GEAR</span>
+        <hr>
+      </q-expansion-item>
+
+      <q-expansion-item v-if="character.ecology" id="ecology"
+                        style="padding: 0"
+                        expand-separator
+                        default-opened
+                        dense
+                        header-class="bg-primary text-white"
+                        label="GEAR">
+      </q-expansion-item>
+
+      <q-expansion-item v-if="character.miscellaneous" id="miscellaneous"
+                        style="padding: 0"
+                        expand-separator
+                        default-opened
+                        dense
+                        header-class="bg-primary text-white"
+                        label="GEAR">
+      </q-expansion-item>
+
+    </q-list>
+    <div id="info">
+
+      <!--      <div v-if="abilityName" class="info">-->
+
+      <!--        <Info-->
+      <!--          v-bind:table="'ability'"-->
+      <!--          v-bind:name="abilityName"-->
+      <!--          @closeInfo="changeInfo"-->
+      <!--        />-->
+
+      <!--      </div>-->
+      <div class="q-pa-md" style="">
+        <q-btn
+          v-morph:btn:mygroup:500.tween="morphGroupModel"
+          class="q-ma-md"
+          fab
+          color="primary"
+          size="lg"
+          icon="add"
+          @click="nextMorph"
+        />
+
+        <q-card
+          v-morph:card1:mygroup:500.tween="morphGroupModel"
+          class="q-ma-md bg-primary text-white"
+          style="width: 300px; border-top-left-radius: 2em"
+        >
+          <q-card-actions align="left">
+            <q-btn flat label="Close" @click="nextMorph"/>
+          </q-card-actions>
+          <q-card-section class="text-h6">
+            <q-list class="column" id="buttons">
+              <q-item-section v-for="(bonus, index) in toggle"
+                              :key="index" class="toggle capitalize"
+                              v-bind:style="{ 'background-color' : bgColor(bonus.duration)}">
+                <q-toggle
+                  v-model="bonus.active"
+                  :label="bonus.name"
+                  left-label
+                />
+              </q-item-section>
+            </q-list>
+
+          </q-card-section>
+
+        </q-card>
+
+      </div>
+
+      <q-card v-if="spellRef" style="background: rgba(0,0,0,50%)">
+        <q-card-section class="text-h4">{{ spellRef.name }}</q-card-section>
+        <Spell :spell="spellRef"/>
+      </q-card>
+
+    </div>
+    <!--        <q-table-->
+    <!--          title="Modifiers"-->
+    <!--          :rows="modifierSource.value"-->
+    <!--          row-key="name"-->
+    <!--        />-->
+  </q-page>
+</template>
+
+<script setup>
+import {
+  computed, ref, defineProps,
+} from 'vue';
+import SpellList from 'src/components/SpellList.vue';
+import Spell from 'src/components/Spell.vue';
+import { api } from 'boot/axios';
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar();
+const props = defineProps({
+  character: Object,
+  initiative: Number,
+  cr: String,
+  xp: Number,
+  maxHP: Number,
+  ac: Number,
+  acBonuses: Object,
+  savingThrows: Number,
+  melee: Object,
+  ranged: Object,
+  baseAtk: Number,
+  cmb: Number,
+  cmd: Number,
+  skills: Object,
+  abilityScores: Object,
+  abilityMods: Object,
+  specialAbilities: Object,
+  toggle: Object,
+});
+
+const nextMorphStep = {
+  btn: 'card1',
+  card1: 'btn',
+};
+
+const morphGroupModel = ref('btn');
+
+function nextMorph() {
+  morphGroupModel.value = nextMorphStep[morphGroupModel.value];
+}
+
+const summarySkillToggle = ref(false);
+const skillToggle = ref(true);
+const featToggle = ref(false);
+const acToggle = ref(false);
+// const specialAbilitiesToggle = ref(true);
+const ExtraordinaryToggle = ref(true);
+const SupernaturalToggle = ref(true);
+// const specialQualitiesToggle = ref(false);
+// const defensiveAbilitiesToggle = ref(true);
+// const abilityName = ref('');
+
+const damageTaken = ref(0);
+
+const currHP = computed({
+  get: () => props.maxHP - damageTaken.value,
+  set: (value) => {
+    damageTaken.value = props.maxHP - value;
+  },
+});
+
+function formatBonus(bonus) {
+  let text;
+  if (bonus < 0) {
+    text = bonus;
+  } else {
+    text = `+${bonus}`;
+  }
+  return text;
+}
+
+const showSpells = computed(() => true);
+
+function formatList(myObj, myKeys) {
+  let list = '';
+
+  let keys;
+
+  if (arguments.length === 2) {
+    keys = myKeys;
+  } else {
+    keys = Object.keys(myObj);
+  }
+
+  if (Array.isArray(myObj)) {
+    const arrSize = myObj.length;
+    for (let index = 0; index < arrSize; index += 1) {
+      if (typeof myObj[index] !== 'undefined') {
+        if (typeof myObj[index] === 'object' && myObj[index] !== null) {
+          list += formatList(myObj[index], keys);
+
+          if (index !== arrSize - 1) {
+            list += ', ';
+          }
+        } else {
+          list += myObj[index];
+
+          if (index !== arrSize - 1) {
+            list += ' ';
+          }
+        }
+      }
+    }
+  } else {
+    const size = keys.length;
+
+    for (let index = 0; index < size; index += 1) {
+      if (typeof myObj[keys[index]] !== 'undefined') {
+        if (typeof myObj[keys[index]] === 'object') {
+          list += formatList(myObj[keys[index]]);
+          if (index !== size - 1) list += ' ';
+        } else {
+          list += myObj[keys[index]];
+        }
+        if (index !== size - 1) list += ' ';
+      }
+    }
+  }
+  return list;
+}
+
+function formatSpecial(myObj, myKeys) {
+  let list = '';
+
+  let keys;
+
+  if (arguments.length === 2) {
+    keys = myKeys;
+  } else {
+    keys = Object.keys(myObj);
+  }
+
+  let i = 0;
+
+  if (Array.isArray(myObj)) {
+    const arrSize = keys.length;
+
+    for (let index = 0; index < arrSize; index += 1) {
+      if (typeof myObj[index] !== 'undefined') {
+        if (typeof myObj[index] === 'object' && myObj[index] !== null) {
+          list += formatSpecial(myObj[index], keys);
+          if (index !== arrSize - 1) {
+            list += ', ';
+          }
+        } else {
+          list += myObj[index];
+
+          if (index !== arrSize - 1) {
+            list += ', ';
+          }
+        }
+      }
+    }
+  } else {
+    const size = keys.length;
+
+    for (let index = 0; index < size; index += 1) {
+      if (i !== 0) {
+        list += ' (';
+      }
+      i = 1;
+
+      if (typeof myObj[keys[index]] !== 'undefined') {
+        if (typeof myObj[keys[index]] === 'object' && myObj[keys[index]][1] !== null) {
+          list += formatSpecial(myObj[keys[index]]);
+
+          if (index !== size - 1) list += ', ';
+        } else {
+          list += myObj[keys[index]];
+        }
+        if (index === size - 1) {
+          if (typeof myObj.usesPerDay !== 'undefined') {
+            list += '/day';
+          }
+
+          list += ')';
+        }
+
+        if (index !== size - 1) list += '';
+      } else {
+        list += 'undefined?';
+      }
+    }
+  }
+  return list;
+}
+
+function formatSkills(myObj) {
+  let list = '';
+
+  const keys = Object.keys(myObj);
+
+  const arrSize = keys.length;
+
+  // let comparer = 0;
+
+  for (let index = 0; index < arrSize; index += 1) {
+    if (keys[index] === 'knowledge') {
+      list += `${keys[index]} (${formatSkills(myObj[keys[index]])})`;
+      // comparer += 1;
+    } else if (myObj.name === 'knowledge' && myObj[keys[index]] !== myObj[keys[0]]) {
+      // comparer += 1;
+    } else {
+      list += `${keys[index]} `;
+      list += formatBonus(myObj[keys[index]]);
+    }
+    if (index !== arrSize - 1) list += ', ';
+  }
+
+  return list;
+}
+
+function formatArray(myArray) {
+  let list = '';
+
+  myArray.forEach((item, idx) => {
+    list += item;
+    if (idx !== myArray.length - 1) list += ', ';
+  });
+
+  return list;
+}
+
+// function closeInfo() {
+//   spellName = '';
+// }
+
+const spellRef = ref(null);
+
+function loadSpell(value) {
+  api.get(`/spell?name=ilike.${value}`)
+    .then((response) => {
+      [spellRef.value] = response.data;
+    })
+    .catch(() => {
+      $q.notify({
+        color: 'negative',
+        position: 'top',
+        message: 'Loading failed',
+        icon: 'report_problem',
+      });
+    });
+}
+
+//
+// function changeInfo(value) {
+//   abilityName.value = value;
+// }
+
+function bgColor(duration) {
+  let color;
+
+  if (duration === 0) {
+    color = 'rgba(0,0,0,.25)';
+  }
+  if (duration === 1) {
+    color = 'rgba(255,0,0,.25)';
+  }
+  if (duration === 2) {
+    color = 'rgba(0,0,255,.25)';
+  }
+
+  return color;
+}
+
+const myColor = computed(() => (currHP.value >= 0 ? 'blue' : 'red'));
+const myTrackColor = computed(() => `${myColor.value}-3`);
+
+</script>
+
+<style scoped lang="scss">
+
+#page {
+  //display: flex;
+  //flex-direction: row;
+  text-shadow: 2px 2px 4px #000000;
+  color: white;
+  text-align: left;
+  align-items: baseline;
+  padding: 1vmin;
+
+  background-size: 100vmax;
+  background-position: 50% 50%;
+  background-attachment: fixed;
+  justify-content: space-between;
+
+}
+
+#name {
+  font-size: 5vmin;
+}
+
+hr {
+  width: 100%
+}
+
+p {
+  margin: .5vmin;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+#stat-block {
+
+  padding: 1vmin;
+
+  display: flex;
+  flex-direction: column;
+  min-width: 50vw;
+  background: rgba(0, 0, 0, 0.5);
+
+}
+
+#info {
+
+  display: flex;
+  flex-direction: column;
+  min-width: 30vw;
+
+}
+
+#buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+}
+
+.toggle {
+
+  display: flex;
+  background-color: rgba(0, 0, 0, .25);
+
+  margin: 1vmin;
+  padding: 1vmin;
+  align-items: center;
+
+}
+
+.toggle {
+  font-size: unset;
+}
+
+@media only screen and (max-width: 1100px) {
+  /* For mobile phones: */
+  [id*="page"] {
+    flex-wrap: wrap;
+  }
+
+  [id*="sheet"] {
+    width: 100%;
+  }
+
+  [id*="info"] {
+    width: 100%;
+  }
+}
+
+span {
+  width: clamp(16px, 100%, 50vmin);
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+</style>

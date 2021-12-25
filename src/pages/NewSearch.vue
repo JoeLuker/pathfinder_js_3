@@ -7,7 +7,20 @@
               label="Table"/>
 
     <q-input
-      v-model="search"
+      v-model="nameSearch"
+      label="Name Search"
+      debounce="500"
+      filled
+      placeholder="Search"
+      @change="loadResults"
+      style="overflow: auto;"
+    >
+      <template v-slot:append>
+        <q-icon name="search"/>
+      </template>
+    </q-input>
+    <q-input
+      v-model="fullSearch"
       label="Full Text Search"
       debounce="500"
       filled
@@ -29,14 +42,14 @@
         :max="pageCount"
       />
     </div>
-    <q-list v-if="resultsList !== []" bordered class="rounded-borders" style="overflow: auto;">
+    <q-list v-if="!searchFlag" bordered class="rounded-borders" style="overflow: auto;">
       <q-expansion-item
         v-for="(result, index) in resultsList" :key="index"
         header-class="text-h6 text-white text-capitalize"
         style="padding: .25em;"
         :header-style="`background:${groupColors[result.group] ?? 'brown'}`"
         expand-separator
-        :label="result.name"
+        :label="(result.name + tableOrder + result.cr + ' SLA Level: ' + result.SLA_Level)"
       >
         <q-card bordered>
           <PFItem v-if="table === 'item'" :pf-item="result"/>
@@ -59,8 +72,14 @@ import Feat from 'src/components/Feat.vue';
 import Bestiary from 'src/components/Bestiary.vue';
 
 const $q = useQuasar();
-const search = ref('');
-const restSearch = computed(() => (search.value === '' ? '' : `*${search.value}*`));
+const fullSearch = ref('');
+const nameSearch = ref('');
+
+const searchFlag = computed(() => (fullSearch.value === '' && nameSearch.value === ''));
+
+const restFullSearch = computed(() => (searchFlag.value ? '' : `*${fullSearch.value}*`));
+
+const restNameSearch = computed(() => (searchFlag.value ? '' : `*${nameSearch.value}*`));
 
 const resultsRef = reactive({});
 const resultsList = ref([]);
@@ -68,16 +87,27 @@ const resultsList = ref([]);
 const resultsLength = ref(null);
 const pageCount = computed(() => Math.floor((resultsLength.value / 20)));
 
-const tablesRef = ref(['item', 'bestiary', 'spell', 'feat']);
-// const tablesOrder = ref(['name', 'cl', 'spell_level']);
+const tablesOrder = reactive({
+  item: 'cl',
+  bestiary: 'cr',
+  spell: 'SLA_Level',
+  feat: 'name',
+});
+
+const tablesRef = computed(() => Object.keys(tablesOrder));
 const table = ref(null);
+
+const tableOrder = computed(() => (tablesOrder[table.value]));
 
 const offsetPage = ref(1);
 const offset = computed(() => Math.floor((offsetPage.value - 1) * 20));
 
 const pagination = computed(() => (`limit=20&offset=${offset.value}`));
-const searchFilter = computed(() => (`fulltext=ilike.${restSearch.value}`));
-// const orderUrl = computed(() => (`order=${tableOrder.value}.desc`));
+
+const fullSearchFilter = computed(() => (`fulltext=ilike.${restFullSearch.value}`));
+const nameSearchFilter = computed(() => (`name=ilike.${restNameSearch.value}`));
+
+const orderUrl = computed(() => (`order=${tableOrder.value}.desc.nullslast`));
 
 function loadResults() {
   const config = {
@@ -91,7 +121,7 @@ function loadResults() {
 
   resultsList.value = [];
 
-  api.get(`/${table.value}?${searchFilter.value}`, config)
+  api.get(`/${table.value}?${fullSearchFilter.value}&${nameSearchFilter.value}`, config)
     .then((response) => {
       [, resultsLength.value] = response.headers['content-range'].split('/');
     })
@@ -104,7 +134,7 @@ function loadResults() {
       });
     });
 
-  api.get(`/${table.value}?${pagination.value}&${searchFilter.value}`)
+  api.get(`/${table.value}?${pagination.value}&${fullSearchFilter.value}&${nameSearchFilter.value}&${orderUrl.value}`)
     .then((response) => {
       response.data.forEach((row) => {
         resultsRef[row.name] = row;
