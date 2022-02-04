@@ -39,14 +39,14 @@ const gub = reactive({
     class: [{
       archetype: ['brown-fur transmuter'],
       name: 'arcanist',
-      level: 9,
+      level: 11,
       hitDie: 6,
       bab: 1 / 2,
       first: true,
       skillRanks: 2,
       classSkills: ['appraise', 'craft', 'fly', 'knowledge', 'lingustics', 'profession', 'spellcraft', 'use magic device'],
       favored: {
-        hp: 9,
+        hp: 11,
         skill: 0,
         race: {
           'monkey goblin': 0,
@@ -58,11 +58,19 @@ const gub = reactive({
         will: true,
       },
       spells: {
-        '4th': {
+        '5th': {
           slots: 4,
           prepared: [
+            'Teleport',
+            'monstrous physique III',
+          ],
+        },
+        '4th': {
+          slots: 5,
+          prepared: [
             'remove curse',
-            'monstrous physique II',
+            'dimension door',
+            'phantom chariot',
           ],
         },
         '3rd': {
@@ -70,7 +78,8 @@ const gub = reactive({
           prepared: [
             'haste',
             'fly',
-            '???',
+            'heroism',
+            'disable construct',
           ],
         },
         '2nd': {
@@ -78,19 +87,19 @@ const gub = reactive({
           prepared: [
             'cat\'s grace',
             'bull\'s strength',
-            'alter self',
-            '???',
+            'blur',
+            'mirror image',
+            'false life',
           ],
         },
         '1st': {
-          slots: 5,
+          slots: 6,
           prepared: [
             'enlarge person',
             'reduce person',
             'mage armor',
             'shield',
             'mindlink',
-
           ],
         },
         Cantrips: {
@@ -107,7 +116,7 @@ const gub = reactive({
         },
 
       },
-      casterLevel: 8,
+      casterLevel: 11,
       casting: 'prepared',
     }],
     alignment: 'N',
@@ -213,7 +222,7 @@ const gub = reactive({
     ],
     skills: {
       acrobatics: {
-        ranks: 8,
+        ranks: 11,
         ability: 'dexterity',
       },
       appraise: {
@@ -237,7 +246,7 @@ const gub = reactive({
         ability: 'charisma',
       },
       'disable device': {
-        ranks: 8,
+        ranks: 11,
         ability: 'dexterity',
       },
       disguise: {
@@ -245,7 +254,7 @@ const gub = reactive({
         ability: 'charisma',
       },
       'escape artist': {
-        ranks: 8,
+        ranks: 11,
         ability: 'dexterity',
       },
       fly: {
@@ -266,7 +275,7 @@ const gub = reactive({
       },
       knowledge: {
         arcana: {
-          ranks: 8,
+          ranks: 11,
           ability: 'intelligence',
         },
         dungeoneering: {
@@ -331,15 +340,15 @@ const gub = reactive({
         ability: 'wisdom',
       },
       'slight of hand': {
-        ranks: 8,
+        ranks: 11,
         ability: 'dexterity',
       },
       spellcraft: {
-        ranks: 8,
+        ranks: 11,
         ability: 'intelligence',
       },
       stealth: {
-        ranks: 8,
+        ranks: 11,
         ability: 'dexterity',
       },
       survival: {
@@ -351,7 +360,7 @@ const gub = reactive({
         ability: 'strength',
       },
       'use magic device': {
-        ranks: 8,
+        ranks: 11,
         ability: 'charisma',
       },
     },
@@ -373,16 +382,16 @@ const gub = reactive({
       bonusType: 'enhancement',
       cost: 0,
       bonus: {
-        intelligence: 4,
-        charisma: 4,
+        intelligence: 6,
+        charisma: 6,
       },
     },
     {
-      name: 'Belt of Con +2',
+      name: 'Belt of Con +6',
       bonusType: 'enhancement',
       cost: 0,
       bonus: {
-        constitution: 2,
+        constitution: 6,
       },
     },
     {
@@ -394,12 +403,12 @@ const gub = reactive({
       },
     },
     {
-      name: 'Mythril Buckler +3',
+      name: 'Mythril Buckler +5',
       bonusType: 'shield',
       cost: 0,
       bonus: {
-        ac: 4,
-        ffAC: 4,
+        ac: 6,
+        ffAC: 6,
       },
     },
     {

@@ -1,5 +1,5 @@
 <template>
-  <BaseSheet2 :character="flafaffiel"
+  <BaseSheet2 :character="klein"
               :initiative="initiative"
               :cr="cr"
               :xp="xp"
@@ -40,48 +40,47 @@ const sizeTable = reactive({
   colossal: -8,
 });
 
-const name = ref('Flafaffiel');
+const name = ref('Klein');
 const solo = ref(false);
 const traits = ref([
-  'fate\'s favored',
   'reactionary',
+  'xa hoi soldier',
 ]);
-const alignment = ref('LG');
+const alignment = ref('CN');
 
-const heritage = ref('suli');
+const heritage = ref('gnome');
 const heritageTraits = ref([]);
-const type = ref('Outsider');
-const subtype = ref(['native']);
-const senses = ref(['']);
+const type = ref('humanoid');
+const subtype = ref(['gnome']);
+const senses = ref(['low-light vision']);
 const aura = ref('');
-const speed = ref(30);
+const speed = ref(20);
 
-const size = ref('medium');
+const size = ref('small');
 const sizeMod = ref(sizeTable[size.value]);
 // TODO
 const space = ref(5);
 const reach = ref(5);
 
-const className = ref('magus');
-const classArchetype = ref(['eldritch scion']);
-const classLevel = ref(13);
-const classHitDie = ref(8);
-const classBab = ref(3 / 4);
+const className = ref('sorcerer');
+const classArchetype = ref(['']);
+const classLevel = ref(10);
+const classHitDie = ref(6);
+const classBab = ref(1 / 2);
 const classSkillRanks = ref(2);
 const classSkills = ref([
-  'Climb',
+  'Appraise',
+  'Bluff',
   'Craft',
   'Fly',
   'Intimidate',
-  'Knowledge',
+  'Arcana',
   'Profession',
-  'Ride',
   'Spellcraft',
-  'Swim',
   'Use Magic Device',
 ]);
 const classSaves = reactive({
-  fortitude: true,
+  fortitude: false,
   reflex: false,
   will: true,
 });
@@ -103,11 +102,11 @@ const extraordinaryAbilities = ref('');
 
 const charMelee = ref([
   {
-    name: 'Bastard Sword',
-    weaponGroup: 'heavy',
+    name: 'dagger',
+    weaponGroup: 'light',
     attack: 0,
     dieCount: 1,
-    dieSize: 10,
+    dieSize: 3,
     damage: 0,
     critRange: 19,
   },
@@ -115,24 +114,23 @@ const charMelee = ref([
 const charRanged = ref(['']);
 
 const charGear = reactive({
-  'Full-Plate Armor': {
-    bonusType: 'armor',
+  'Cloak of Resistance': {
+    bonusType: 'resistance',
     bonus: {
-      ac: 9,
-      ffAC: 9,
+      saves: 3,
     },
   },
-  Suli: {
+  Gnome: {
     bonusType: 'racial',
     bonus: {
-      strength: 2,
-      intelligence: -2,
+      strength: -2,
+      constitution: 2,
       charisma: 2,
     },
   },
 });
 
-const flafaffiel = computed(() => {
+const klein = computed(() => {
   const introduction = {
     name: name.value,
     solo: solo.value,
@@ -151,9 +149,9 @@ const flafaffiel = computed(() => {
         classSkills: classSkills.value,
         favored: {
           hp: 0,
-          skill: 0,
+          skill: 10,
           heritage: {
-            suli: 13,
+            gnome: 0,
           },
         },
         saves: classSaves,
@@ -164,50 +162,51 @@ const flafaffiel = computed(() => {
           '4th': {
             slots: classSpellSlots['4th'],
             prepared: [
-              'Invisibility, Greater',
-              'Dimension Door',
-              'Modify Memory',
-              '???',
+              'Masochistic Shadow',
+              'Boneshatter',
+              'Animate Dead',
             ],
           },
           '3rd': {
             slots: classSpellSlots['3rd'],
             prepared: [
-              'Haste',
-              'Glibness',
-              'Major Image',
-              'Charm monster',
+              'Fireball',
+              'Blacklight',
+              'Lesser, Animate Dead',
+              'Vampiric Touch',
             ],
           },
           '2nd': {
             slots: classSpellSlots['2nd'],
             prepared: [
-              'Heroism',
-              'Gallant Inspiration',
-              'Blur',
+              'See Invisibility',
+              'Command Undead',
+              'Blindness/Deafness',
               'Invisibility',
-              'Heroic Fortune',
+              'False Life',
             ],
           },
           '1st': {
             slots: classSpellSlots['1st'],
             prepared: [
-              'Fabricate Disguise',
-              'Saving Finale',
-              'Hideous Laughter',
+              'Air Bubble',
+              'Mage Armor',
+              'Ray of Enfeeblement',
               'Grease',
-              'Heightened Awareness',
-              'Feather Fall',
+              'Burning Hands',
+              'Chill Touch',
             ],
           },
           Cantrips: {
             prepared: [
-              'Dancing Lights',
+              'Light',
               'Detect Magic',
-              'Prestidigitation',
+              'Mending',
               'Daze',
               'Open/Close',
               'Mage Hand',
+              'Ghost Sound',
+              'Haunted Aspect',
             ],
           },
 
@@ -250,22 +249,22 @@ const flafaffiel = computed(() => {
   const statistics = {
     abilityScore: {
       strength: {
-        pointBuy: 16,
+        pointBuy: 7,
       },
       dexterity: {
-        pointBuy: 10,
+        pointBuy: 14,
       },
       constitution: {
-        pointBuy: 10,
+        pointBuy: 16,
       },
       intelligence: {
-        pointBuy: 10,
+        pointBuy: 12,
       },
       wisdom: {
-        pointBuy: 10,
+        pointBuy: 9,
       },
       charisma: {
-        pointBuy: 14,
+        pointBuy: 18,
       },
     },
     feats: [
@@ -293,7 +292,7 @@ const flafaffiel = computed(() => {
         ability: 'intelligence',
       },
       diplomacy: {
-        ranks: 13,
+        ranks: 0,
         ability: 'charisma',
       },
       'disable device': {
@@ -321,7 +320,7 @@ const flafaffiel = computed(() => {
         ability: 'wisdom',
       },
       intimidate: {
-        ranks: 13,
+        ranks: 0,
         ability: 'charisma',
       },
       knowledge: {
@@ -444,7 +443,7 @@ const baseAtk = computed(() => {
 
   let maxBAB = 0;
 
-  const CharClasses = ref(flafaffiel.value.introduction.class);
+  const CharClasses = ref(klein.value.introduction.class);
 
   CharClasses.value.forEach((charClass) => {
     if (charClass.gestalt === true) {
@@ -482,13 +481,13 @@ const toggle = reactive([
     },
   },
   {
-    name: 'Enhance Weapon',
-    bonusType: 'Enhancement',
+    name: 'C-4P0\'s Skin',
+    bonusType: 'Natural Armor Enhancement',
     active: false,
-    duration: 1,
+    duration: 2,
     bonus: {
-      attackRolls: 4,
-      weaponDamage: 4,
+      ac: 4,
+      ffac: 4,
     },
   },
 ]);
@@ -511,10 +510,10 @@ const acBonuses = computed(() => {
   }
 
   modifierLoop(toggle);
-  modifierLoop(flafaffiel.value.gear);
-  modifierLoop(flafaffiel.value.statistics.feats);
-  modifierLoop(flafaffiel.value.introduction.traits);
-  modifierLoop(flafaffiel.value.introduction.heritageTraits);
+  modifierLoop(klein.value.gear);
+  modifierLoop(klein.value.statistics.feats);
+  modifierLoop(klein.value.introduction.traits);
+  modifierLoop(klein.value.introduction.heritageTraits);
 
   const holder = reactive({});
 
@@ -557,10 +556,10 @@ const modifiers = computed(() => {
   }
 
   modifierLoop(toggle);
-  modifierLoop(flafaffiel.value.gear);
-  modifierLoop(flafaffiel.value.statistics.feats);
-  modifierLoop(flafaffiel.value.introduction.traits);
-  modifierLoop(flafaffiel.value.introduction.heritageTraits);
+  modifierLoop(klein.value.gear);
+  modifierLoop(klein.value.statistics.feats);
+  modifierLoop(klein.value.introduction.traits);
+  modifierLoop(klein.value.introduction.heritageTraits);
 
   const holder = reactive({});
 
@@ -582,7 +581,7 @@ const modifiers = computed(() => {
 });
 
 const sizeModifier = computed(() => {
-  let tempSize = flafaffiel.value.introduction.sizeMod;
+  let tempSize = klein.value.introduction.sizeMod;
 
   tempSize += modifiers.value.size ?? 0;
 
@@ -601,7 +600,7 @@ const abilityScores = computed(() => {
     charisma: 0,
   });
 
-  const objectHusk = reactive(flafaffiel.value.statistics.abilityScore);
+  const objectHusk = reactive(klein.value.statistics.abilityScore);
 
   const keys = ref(Object.keys(objectHusk));
 
@@ -655,11 +654,11 @@ const cmd = computed(() => 10 + abilityMods.value.dexterity
   + abilityMods.value.strength + baseAtk.value
   + sizeModifier.value);
 // eslint-disable-next-line max-len
-const level = computed(() => flafaffiel.value.introduction.class.reduce(((accumulator, cur) => ((cur.gestalt ?? false)
+const level = computed(() => klein.value.introduction.class.reduce(((accumulator, cur) => ((cur.gestalt ?? false)
   ? Math.max(accumulator, cur.level) : accumulator + cur.level)), 0));
 
 const skills = computed(() => {
-  const skillRanks = flafaffiel.value.statistics.skills;
+  const skillRanks = klein.value.statistics.skills;
 
   const totalSkills = {
     acrobatics: 0,
@@ -706,9 +705,9 @@ const skills = computed(() => {
     totalSkills.stealth += (Math.log2(sizeModifier.value) + 1) * 4;
   }
 
-  const tempClassSkills = ref(flafaffiel.value.introduction.class[0].classSkills);
+  const tempClassSkills = ref(klein.value.introduction.class[0].classSkills);
 
-  const { knowledge } = flafaffiel.value.statistics.skills;
+  const { knowledge } = klein.value.statistics.skills;
 
   const knowledgeKeys = Object.keys(knowledge);
 
@@ -734,11 +733,11 @@ const skills = computed(() => {
           += abilityMods.value[skillRanks.knowledge[knowledgeSkillKey].ability];
         totalSkills.knowledge[knowledgeSkillKey] += modifiers.value.skills ?? 0;
 
-        // if (flafaffiel.value.specialAbilities.abilities?.includes('Bardic Knowledge')) {
+        // if (klein.value.specialAbilities.abilities?.includes('Bardic Knowledge')) {
         //   totalSkills.knowledge[knowledgeSkillKey] += level.value;
         // }
         // if (skillRanks.knowledge[knowledgeSkillKey].ranks >= 1
-        // || flafaffiel.value.specialAbilities.abilities?.includes('Bardic Knowledge')) {
+        // || klein.value.specialAbilities.abilities?.includes('Bardic Knowledge')) {
         //   if (!summarySkills.knowledge) summarySkills.knowledge = {};
         //   summarySkills.knowledge[knowledgeSkillKey] = totalSkills.knowledge[knowledgeSkillKey];
         // }
@@ -784,7 +783,7 @@ const maxHP = computed(() => {
 
   let maxHitDie = 0;
 
-  const CharClasses = flafaffiel.value.introduction.class;
+  const CharClasses = klein.value.introduction.class;
 
   CharClasses.forEach((charClass) => {
     if (charClass.gestalt !== true) {
@@ -804,7 +803,7 @@ const maxHP = computed(() => {
     }
   });
 
-  if (flafaffiel.value.introduction.solo) {
+  if (klein.value.introduction.solo) {
     hitPoints = maxHitDie * level.value;
   }
 
@@ -825,9 +824,9 @@ const savingThrows = computed(() => {
 
   allBonus += modifiers.value.saves ?? 0;
 
-  const saveKeys = Object.keys(flafaffiel.value.defense.saveAbilityScore);
+  const saveKeys = Object.keys(klein.value.defense.saveAbilityScore);
 
-  const charClasses = ref(flafaffiel.value.introduction.class);
+  const charClasses = ref(klein.value.introduction.class);
 
   const maxCharSaves = {
     fortitude: false,
@@ -849,7 +848,7 @@ const savingThrows = computed(() => {
       totalSaves[save] += Math.floor(level.value / 3);
     }
     totalSaves[save] += modifiers.value[save] ?? 0;
-    totalSaves[save] += abilityMods.value[flafaffiel.value.defense.saveAbilityScore[save]];
+    totalSaves[save] += abilityMods.value[klein.value.defense.saveAbilityScore[save]];
     totalSaves[save] += allBonus;
   });
 
@@ -894,7 +893,7 @@ const melee = computed(() => {
 
   const mOptions = ref([]);
 
-  flafaffiel.value.offense.melee.forEach((meleeOption) => {
+  klein.value.offense.melee.forEach((meleeOption) => {
     const option = ref({});
     Object.keys(meleeOption)
       .forEach((meleeAttr) => {
@@ -919,7 +918,7 @@ const ranged = computed(() => {
 
   const rOptions = ref([]);
 
-  flafaffiel.value.offense.ranged.forEach((rangedOption) => {
+  klein.value.offense.ranged.forEach((rangedOption) => {
     const option = ref({});
     Object.keys(rangedOption)
       .forEach((rangedAttr) => {

@@ -53,6 +53,11 @@ const linksList = [
     link: '/#/NewCharacter',
   },
   {
+    title: 'Bonus Store',
+    icon: 'school',
+    link: '/#/BonusStore',
+  },
+  {
     title: 'Immogen',
     icon: 'school',
     link: '/#/Immogen',
@@ -66,6 +71,11 @@ const linksList = [
     title: 'Gub',
     icon: 'search',
     link: '/#/Gub',
+  },
+  {
+    title: 'Klein',
+    icon: 'search',
+    link: '/#/Klein',
   },
   {
     title: 'Flafaffiel',

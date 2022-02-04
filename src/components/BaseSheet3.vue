@@ -43,7 +43,7 @@
         <div>
           <b>Init </b><span id="initiative" v-text="formatBonus(character.initiative.value)"></span>
           <b> Senses </b>
-          <span id="senses" v-text="formatList(character.introduction.senses)"/>
+          <i id="senses" v-text="formatList(character.introduction.senses)"/>
           <span>; Perception {{ formatBonus(character.skills.value.totalSkills.perception) }}</span>
 
         </div>
@@ -187,6 +187,14 @@
           </span>
         </div>
 
+        <div v-if="character.specialAttacks" id="specialAttacks" class="text-capitalize">
+          <b>Special Attacks </b>
+          <span v-for="(option, index) in character.specialAttacks" :key="index">
+            <span v-text="option"/>
+            <span v-if="index !== character.specialAttacks.length - 1">, </span>
+          </span>
+        </div>
+
         <div v-if="character.offense.space !== 5 || character.offense.reach !== 5">
           <b>Space </b><span id="space"> {{ character.offense.space }} ft.; </span>
           <b>Reach </b><span id="reach"> {{ character.offense.reach }} ft.; </span>
@@ -244,31 +252,15 @@
           <b>CMD </b><span id="cmd" v-text="formatBonus(character.cmd.value)"/>;
         </div>
         <div>
-          <b @click="featToggle = !featToggle">Feats </b>
-          <span v-if="featToggle" id="feats" class="capitalize"
-                v-text="formatArray(character.statistics.feats)"/>
-          <span v-else>...</span>
-        </div>
-        <div>
           <b @click="skillToggle = !skillToggle"> Skills </b>
           <span v-if="skillToggle">
             <span class="capitalize">
-                <span v-if="summarySkillToggle">
+                <span>
                   <span class="capitalize">
                     {{ formatSkills(character.skills.value.totalSkills) }}
                   </span>
                 </span>
-                <span v-if="!summarySkillToggle">
-                  <span class="capitalize">
-                    {{ formatSkills(character.skills.value.summarySkills) }}
-                  </span>
-                </span>
               <span>
-
-                <i v-if="!summarySkillToggle"
-                   @click="summarySkillToggle = true"> Show More Skills..</i>
-                <i v-if="summarySkillToggle"
-                   @click="summarySkillToggle = false"> Show Fewer Skills..</i>
 
                 </span>
           </span>
@@ -306,7 +298,6 @@
       <q-expansion-item v-if="character.featDescriptions.value" id="feat descriptions"
                         style="padding: 0"
                         expand-separator
-                        default-opened
                         dense
                         header-class="bg-primary text-white"
                         label="FEATS">
@@ -330,7 +321,6 @@
       <q-expansion-item v-if="character.specialAbilities.value" id="special abilities"
                         style="padding: 0"
                         expand-separator
-                        default-opened
                         dense
                         header-class="bg-primary text-white"
                         label="SPECIAL ABILITIES">
@@ -341,30 +331,6 @@
                             expand-separator
                             dense
                             header-class="bg-primary text-white"
-                            :label="item.header">
-            <p v-for="(descItem, descIndex) in item.description" :key="descIndex">
-              <span v-text="descItem"/>
-              <br>
-              <br>
-            </p>
-          </q-expansion-item>
-        </q-card-section>
-      </q-expansion-item>
-
-      <q-expansion-item v-if="character.mythicAbilities.value" id="special abilities"
-                        style="padding: 0;"
-                        expand-separator
-                        default-opened
-                        dense
-                        header-class="bg-yellow-8 text-white"
-                        label="MYTHIC ABILITIES">
-        <q-card-section>
-          <q-expansion-item v-for="(item, index) in character.mythicAbilities.value"
-                            :key="index"
-                            style="padding: 0;"
-                            expand-separator
-                            dense
-                            header-class="bg-yellow-8 text-white"
                             :label="item.header">
             <p v-for="(descItem, descIndex) in item.description" :key="descIndex">
               <span v-text="descItem"/>
@@ -433,14 +399,8 @@ const props = defineProps({
 
 const toggle = reactive(props.character.toggle ?? {});
 
-const summarySkillToggle = ref(false);
 const skillToggle = ref(true);
-const featToggle = ref(false);
 const acToggle = ref(false);
-// const specialAbilitiesToggle = ref(true);
-// const specialQualitiesToggle = ref(false);
-// const defensiveAbilitiesToggle = ref(true);
-// const abilityName = ref('');
 
 const damageTaken = ref(0);
 

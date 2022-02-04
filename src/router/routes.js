@@ -14,10 +14,31 @@ const routes = [
     ],
   },
   {
+    path: '/BonusStore',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/BonusStore.vue') },
+    ],
+  },
+  {
     path: '/Immogen',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Immogen.vue') },
+    ],
+  },
+  {
+    path: '/Immogen2',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/Immogen2.vue') },
+    ],
+  },
+  {
+    path: '/Aaron',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/Aaron.vue') },
     ],
   },
   {
@@ -32,6 +53,13 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Gub.vue') },
+    ],
+  },
+  {
+    path: '/Klein',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/Klein.vue') },
     ],
   },
   {

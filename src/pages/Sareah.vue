@@ -46,7 +46,7 @@ const sareah = reactive({
       {
         archetype: ['ley-line gaurdian'],
         name: 'witch',
-        level: 9,
+        level: 11,
         hitDie: 6,
         bab: 1 / 2,
         first: true,
@@ -56,7 +56,7 @@ const sareah = reactive({
           hp: 4,
           skill: 0,
           race: {
-            'half-elf': 6,
+            'half-elf': 7,
           },
         },
         saves: {
@@ -64,14 +64,23 @@ const sareah = reactive({
           reflex: false,
           will: true,
         },
-        casterLevel: 9,
+        casterLevel: 11,
         casting: 'spontanious',
         spells: {
+          '5th': {
+            slots: 5,
+            prepared: [
+              'hold monster',
+              'teleport',
+            ],
+          },
           '4th': {
-            slots: 6,
+            slots: 8,
             prepared: [
               'enervation',
               'confusion',
+              'demanding message',
+              'hunger of flesh',
             ],
           },
           '3rd': {
@@ -80,8 +89,9 @@ const sareah = reactive({
               'suggestion',
               'lightning bolt',
               'bestow curse',
-              '???',
-              '???',
+              'fly',
+              'howling agony',
+              'call the void',
             ],
           },
           '2nd': {
@@ -90,10 +100,11 @@ const sareah = reactive({
               'lipstitch',
               'hold person',
               'web',
-              '???',
+              'enthrall',
               'limp lash',
               'zone of truth',
-              '???',
+              'glitterdust',
+              'perceive cues',
             ],
           },
           '1st': {
@@ -106,7 +117,7 @@ const sareah = reactive({
               'beguiling gift',
               'ill omen',
               'ray of enfeeblement',
-              '???',
+              'blend',
             ],
           },
           Cantrips: {
@@ -117,9 +128,8 @@ const sareah = reactive({
               'daze',
               'bleed',
               'touch of fatigue',
-              '???',
-              '???',
-
+              'stabilize',
+              'create water',
             ],
           },
 
@@ -130,6 +140,7 @@ const sareah = reactive({
           '2nd': 'mirror image',
           '3rd': 'major image',
           '4th': 'hallucinatory terrain',
+          '5th': 'mirage arcana',
 
         },
       }],
@@ -160,7 +171,7 @@ const sareah = reactive({
     reach: 5,
     specialAttacks: [
       {
-        name: 'Witch Hexes (DC 22)',
+        name: 'Witch Hexes (DC 23)',
         hexes: [
           'cackle',
           'misfortune',
@@ -168,6 +179,7 @@ const sareah = reactive({
           'slumber',
           'flight',
           'gift of consumption',
+          'major ???',
         ],
       },
       {
@@ -236,13 +248,15 @@ const sareah = reactive({
       },
       // 'Spell Focus (Enchantment)',
       'Extra Hex (Flight)',
+      'Split Hex',
       // 'Spell Focus (Necromancy)',
       // 'Spell Focus (Illusion)',
       // 'Witch Knife',
+      'spell penetration',
     ],
     skills: {
       acrobatics: {
-        ranks: 9,
+        ranks: 11,
         ability: 'dexterity',
       },
       appraise: {
@@ -250,7 +264,7 @@ const sareah = reactive({
         ability: 'intelligence',
       },
       bluff: {
-        ranks: 9,
+        ranks: 11,
         ability: 'intelligence',
       },
       climb: {
@@ -262,7 +276,7 @@ const sareah = reactive({
         ability: 'intelligence',
       },
       diplomacy: {
-        ranks: 9,
+        ranks: 11,
         ability: 'intelligence',
       },
       'disable device': {
@@ -416,19 +430,13 @@ const sareah = reactive({
       },
     },
     {
-      name: 'Belt of Dex +6',
+      name: 'Belt of Dex/Con +6',
       bonusType: 'enhancement',
-      cost: 0,
+      cost: 90000,
       bonus: {
         dexterity: 6,
-      },
-    },
-    {
-      name: 'Ioun Stone Con +2',
-      bonusType: 'enhancement',
-      cost: 8000,
-      bonus: {
-        constitution: 2,
+        constitution: 6,
+
       },
     },
     {
@@ -484,6 +492,16 @@ const sareah = reactive({
 
   toggle: [
 
+    {
+      name: 'Perceive Cues',
+      bonusType: 'competence',
+      active: false,
+      duration: 1,
+      bonus: {
+        perception: 5,
+        'sense motive': 5,
+      },
+    },
     {
       name: 'Haste',
       bonusType: 'dodge',
