@@ -24,7 +24,7 @@ const sizeTable = reactive({
 });
 
 const character = computed(() => {
-  const name = ref('Aaron\'s Dragonborn');
+  const name = ref('Gorthor');
   const solo = ref(true);
   const traits = ref([
     'fate\'s favored',

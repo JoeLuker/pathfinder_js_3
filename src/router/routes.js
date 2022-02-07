@@ -14,10 +14,17 @@ const routes = [
     ],
   },
   {
-    path: '/BonusStore',
+    path: '/Gorthor',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/BonusStore.vue') },
+      { path: '', component: () => import('pages/Gorthor.vue') },
+    ],
+  },
+  {
+    path: '/Frey',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/Frey.vue') },
     ],
   },
   {
@@ -38,14 +45,14 @@ const routes = [
     path: '/Aaron',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Aaron.vue') },
+      { path: '', component: () => import('pages/Gorthor.vue') },
     ],
   },
   {
     path: '/Sareah',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Sareah.vue') },
+      { path: '', component: () => import('pages/Sareah2.vue') },
     ],
   },
   {

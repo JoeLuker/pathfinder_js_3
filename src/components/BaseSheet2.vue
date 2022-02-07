@@ -173,7 +173,7 @@
             <span v-text="option.name"/>
             <span v-text="'&nbsp;'"/>
             <span v-text="formatBonus(option.attack)"/>
-            <span v-if="option.damage || option.dieCount">
+            <span v-if="option.dieCount">
               <span v-text="'&nbsp;'"/>
               <span v-text="'('"/>
               <span v-text="option.dieCount"/>
@@ -303,7 +303,7 @@
         </q-card-section>
       </q-expansion-item>
 
-      <q-expansion-item v-if="character.featDescriptions.value" id="feat descriptions"
+      <q-expansion-item v-if="character.featDescriptions" id="feat descriptions"
                         style="padding: 0"
                         expand-separator
                         default-opened

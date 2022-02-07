@@ -173,7 +173,7 @@
             <span v-text="option.name"/>
             <span v-text="'&nbsp;'"/>
             <span v-text="formatBonus(option.attack)"/>
-            <span v-if="option.damage || option.dieCount">
+            <span v-if="option.dieCount">
               <span v-text="'&nbsp;'"/>
               <span v-text="'('"/>
               <span v-text="option.dieCount"/>
@@ -189,8 +189,9 @@
 
         <div v-if="character.specialAttacks" id="specialAttacks" class="text-capitalize">
           <b>Special Attacks </b>
-          <span v-for="(option, index) in character.specialAttacks" :key="index">
-            <span v-text="option"/>
+          <span v-for="(attack, index) in character.specialAttacks" :key="index"
+                class="special-attacks capitalize">
+         {{ formatSpecial(attack) }}
             <span v-if="index !== character.specialAttacks.length - 1">, </span>
           </span>
         </div>
@@ -551,6 +552,71 @@ function bgColor(duration) {
 
 const myColor = computed(() => (currHP.value >= 0 ? 'blue' : 'red'));
 const myTrackColor = computed(() => `${myColor.value}-3`);
+function formatSpecial(myObj, myKeys) {
+  let list = '';
+
+  let keys;
+
+  if (arguments.length === 2) {
+    keys = myKeys;
+  } else {
+    keys = Object.keys(myObj);
+  }
+
+  let i = 0;
+
+  if (Array.isArray(myObj)) {
+    const arrSize = keys.length;
+
+    for (let index = 0; index < arrSize; index += 1) {
+      if (typeof myObj[index] !== 'undefined') {
+        if (typeof myObj[index] === 'object' && myObj[index] !== null) {
+          list += formatSpecial(myObj[index], keys);
+          if (index !== arrSize - 1) {
+            list += ', ';
+          }
+        } else {
+          list += myObj[index];
+
+          if (index !== arrSize - 1) {
+            list += ', ';
+          }
+        }
+      }
+    }
+  } else {
+    const size = keys.length;
+
+    for (let index = 0; index < size; index += 1) {
+      if (i !== 0) {
+        list += ' (';
+      }
+      i = 1;
+
+      if (typeof myObj[keys[index]] !== 'undefined') {
+        if (typeof myObj[keys[index]] === 'object' && myObj[keys[index]][1] !== null) {
+          list += formatSpecial(myObj[keys[index]]);
+
+          if (index !== size - 1) list += ', ';
+        } else {
+          list += myObj[keys[index]];
+        }
+        if (index === size - 1) {
+          if (typeof myObj.usesPerDay !== 'undefined') {
+            list += '/day';
+          }
+
+          list += ')';
+        }
+
+        if (index !== size - 1) list += '';
+      } else {
+        list += 'undefined?';
+      }
+    }
+  }
+  return list;
+}
 
 </script>
 

@@ -60,7 +60,17 @@ const linksList = [
   {
     title: 'Immogen',
     icon: 'school',
-    link: '/#/Immogen',
+    link: '/#/Immogen2',
+  },
+  {
+    title: 'Gorthor',
+    icon: 'school',
+    link: '/#/Gorthor',
+  },
+  {
+    title: 'Frey',
+    icon: 'school',
+    link: '/#/Frey',
   },
   {
     title: 'Sareah',

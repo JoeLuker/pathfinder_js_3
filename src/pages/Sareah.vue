@@ -513,7 +513,8 @@ const sareah = reactive({
         ac: 1,
         touchAC: 1,
       },
-    }, {
+    },
+    {
       name: 'Mage Armor',
       bonusType: 'armor',
       active: true,
@@ -523,7 +524,8 @@ const sareah = reactive({
         ffAC: 4,
 
       },
-    }, {
+    },
+    {
       name: 'C-4PO\'s Skin',
       bonusType: 'naturalArmorEnhancement',
       active: true,
@@ -532,7 +534,8 @@ const sareah = reactive({
         ac: 4,
         ffAC: 4,
       },
-    }, {
+    },
+    {
       name: 'Gub\'s Reduce Person',
       bonusType: 'size',
       active: false,
