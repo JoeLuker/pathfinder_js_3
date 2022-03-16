@@ -87,7 +87,7 @@
             </div>
             <div>
 
-              <div id="defensive abilities" v-text="character.defensiveAbilities"></div>
+              <div id="defensive abilities" v-text="character.defense.defensiveAbilities"></div>
               <div id="dr" v-if="character.defense.dr">
                 <b>DR </b>
                 <span v-for="(drValue, drType, index) in character.defense.dr" :key="index">
@@ -154,7 +154,13 @@
           <span v-for="(option, index) in character.melee.value" :key="index">
             <span v-text="option.name"/>
             <span v-text="'&nbsp;'"/>
-            <span v-text="formatBonus(option.attack)"/>
+            <span v-if="option.attackCount > -1 ?? false">
+              <span v-for="n in (option.attackCount + character.attackCount.value)" :key="n">
+                <span v-text="formatBonus(option.attack + option.attackPenalty)"/>
+                <span v-if="n !== (option.attackCount + character.attackCount.value)">/</span>
+              </span>
+            </span>
+            <span v-else v-text="formatBonus(option.attack)"/>
             <span v-if="option.damage || option.dieCount">
               <span v-text="'&nbsp;'"/>
               <span v-text="'('"/>
@@ -172,7 +178,7 @@
           <span v-for="(option, index) in character.ranged.value" :key="index">
             <span v-text="option.name"/>
             <span v-text="'&nbsp;'"/>
-            <span v-text="formatBonus(option.attack)"/>
+            <span v-if="option.attack" v-text="formatBonus(option.attack)"/>
             <span v-if="option.dieCount">
               <span v-text="'&nbsp;'"/>
               <span v-text="'('"/>
@@ -183,7 +189,7 @@
               <span v-if="option.critRange != 20" v-text="`/${option.critRange}–20`"/>
               <span v-text="')'"/>
             </span>
-
+            <span v-if="index !== character.ranged.value.length - 1">, </span>
           </span>
         </div>
 

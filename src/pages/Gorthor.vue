@@ -65,13 +65,37 @@ const character = computed(() => {
     {
       name: 'Handaxe',
       weaponGroup: 'light',
+      attackCount: 0,
+      attackPenalty: 0,
+
       dieCount: 1,
       dieSize: 6,
       critRange: 20,
       critMult: 3,
     },
   ]);
-  const charRanged = ref([]);
+  const charRanged = ref([
+    {
+      name: 'Shuriken',
+      weaponGroup: 'thrown',
+      attackCount: 0,
+      attackPenalty: 0,
+      dieCount: 1,
+      dieSize: 2,
+      critRange: 20,
+      critMult: 2,
+    },
+    {
+      name: 'Flurry of Stars',
+      weaponGroup: 'thrown',
+      attackCount: 2,
+      attackPenalty: -2,
+      dieCount: 1,
+      dieSize: 2,
+      critRange: 20,
+      critMult: 2,
+    },
+  ]);
 
   const mythicTier = ref(0);
   const mythicFlag = ref(false);
@@ -110,7 +134,7 @@ const character = computed(() => {
     class: [
       {
         name: 'ninja',
-        level: 1,
+        level: 4,
         hitDie: 8,
         bab: 3 / 4,
         first: true,
@@ -125,9 +149,9 @@ const character = computed(() => {
         ],
         favored: {
           hp: 0,
-          skill: 1,
+          skill: 4,
           race: {
-            nagaji: 0,
+            dragonborn: 0,
           },
         },
         saves: {
@@ -207,6 +231,14 @@ const character = computed(() => {
         bonus: {
           reflex: 0,
         },
+      },
+      'Double Slice': {
+        bonusType: '',
+        bonus: {},
+      },
+      Outflank: {
+        bonusType: '',
+        bonus: {},
       },
     },
     skills: {
@@ -298,6 +330,7 @@ const character = computed(() => {
       active: true,
       bonus: {
         attackRolls: -2,
+        attackCount: 1,
       },
     },
     {
@@ -322,8 +355,8 @@ const character = computed(() => {
     abpWeapon: {
       bonusType: 'enhancement',
       bonus: {
-        attackRolls: 0,
-        weaponDamage: 0,
+        attackRolls: 1,
+        weaponDamage: 1,
       },
     },
     abpAbilityScores: {
@@ -334,7 +367,7 @@ const character = computed(() => {
         constitution: 0,
         intelligence: 0,
         wisdom: 0,
-        charisma: 0,
+        charisma: 2,
       },
     },
     abpResistance: {
@@ -353,9 +386,9 @@ const character = computed(() => {
     abpDeflection: {
       bonusType: 'deflection',
       bonus: {
-        ac: 0,
-        ffAC: 0,
-        touchAC: 0,
+        ac: 1,
+        ffAC: 1,
+        touchAC: 1,
       },
     },
     abpShield: {
@@ -369,8 +402,21 @@ const character = computed(() => {
     abpArmor: {
       bonusType: 'armorEnhancement',
       bonus: {
-        ac: 0,
-        ffAC: 0,
+        ac: 1,
+        ffAC: 1,
+      },
+    },
+    'No Trace': {
+      bonusType: 'Insight',
+      bonus: {
+        performance: 1,
+        stealth: 1,
+      },
+    },
+    levelUp: {
+      bonusType: 'inherent',
+      bonus: {
+        constitution: 1,
       },
     },
   });
@@ -466,6 +512,16 @@ const character = computed(() => {
     });
 
     return holder;
+  });
+
+  const attackCount = computed(() => {
+    let tempattackCount = 1;
+
+    tempattackCount += modifiers.value.attackCount ?? 0;
+
+    // tempattackCount += Math.floor((baseAtk.value - 1) / 5) ?? 0;
+
+    return tempattackCount;
   });
 
   const sizeModifier = computed(() => {
@@ -739,7 +795,7 @@ const character = computed(() => {
   });
 
   const ranged = computed(() => {
-    const tempRangedAttack = ref(Math.max(abilityMods.value.dexterity, abilityMods.value.strength)
+    const tempRangedAttack = ref(Math.max(abilityMods.value.dexterity)
       + baseAtk.value
       + sizeModifier.value + (modifiers.value.attackRolls ?? 0));
     const tempRangedDamage = ref(abilityMods.value.strength + (modifiers.value.weaponDamage ?? 0));
@@ -767,8 +823,12 @@ const character = computed(() => {
   });
 
   const specialAttacks = reactive([
-    `sneak attack (+${Math.floor((level.value + 1) / 2)}d6)`,
-    `Breath Weapon (1/day) (+${Math.max(Math.floor(level.value / 2), 1) + abilityMods.value.charisma}, ${level.value}d6)`,
+    {
+      name: `sneak attack (+${Math.floor((level.value + 1) / 2)}d6`,
+    },
+    {
+      name: `Breath Weapon (1/day) (30-ft. line, +${Math.max(Math.floor(level.value / 2), 1) + abilityMods.value.charisma}, ${level.value}d6`,
+    },
   ]);
 
   const featDescriptions = ref([
@@ -780,7 +840,23 @@ const character = computed(() => {
         'Your penalties on attack rolls for fighting with two weapons are reduced. The penalty for your primary hand lessens by 2 and the one for your off hand lessens by 6',
       ],
     },
-
+    {
+      name: 'double slice',
+      type: 'combat',
+      header: 'Double Slice',
+      description: [
+        'Add your Strength bonus to damage rolls made with your off-hand weapon.',
+      ],
+    },
+    {
+      name: 'far shot',
+      type: 'combat',
+      header: 'Far Shot',
+      description: [
+        'You only suffer a –1 penalty per full range increment between you and your target when using a ranged weapon.',
+        'Shurikens have a range increment of 10 feet',
+      ],
+    },
   ]);
 
   const specialAbilities = ref([
@@ -802,6 +878,35 @@ const character = computed(() => {
       description: [
         'This breath weapon deals 1d6 points of damage of your energy type per sorcerer level. Those caught in the area of the breath receive a Reflex save for half damage. The DC of this save is equal to 10 + 1/2 your character level + your Charisma modifier.',
         'The shape of the breath weapon depends on your dragon type (as indicated on the above chart). At 9th level, you can use this ability twice per day. At 17th level, you can use this ability three times per day. At 20th level, you can use this ability four times per day.',
+      ],
+    },
+    {
+      name: 'ki pool',
+      type: 'Su',
+      header: `Ki Pool (Su) +${Math.max(Math.floor(level.value / 2), 1) + abilityMods.value.charisma}/day`,
+      description: [
+        'At 2nd level, a ninja gains a pool of ki points, supernatural energy she can use to accomplish amazing feats. The number of points in the ninja’s ki pool is equal to 1/2 her ninja level + her Charisma modifier.',
+        'As long as she has at least 1 point in her ki pool, she treats any Acrobatics skill check made to jump as if she had a running start. At 10th level, she also reduces the DC of Acrobatics skill checks made to jump by 1/2 (although she still cannot move farther than her speed allows).',
+        'By spending 1 point from her ki pool, a ninja can make one additional attack at her highest attack bonus, but she can do so only when making a two-weapon fighting attack. In addition, she can spend 1 point to increase her speed by 20 feet for 1 round.',
+        'Finally, a ninja can spend 1 point from her ki pool to give herself a +4 insight bonus on Stealth checks for 1 round. Each of these powers is activated as a swift action. A ninja can gain additional powers that consume points from her ki pool by selecting certain ninja tricks.',
+      ],
+    },
+    {
+      name: 'vanishing trick',
+      type: 'Su',
+      header: 'Vanishing Trick (Su) (1 ki point)',
+      description: [
+        'As a single action, the ninja can disappear for 1 round per level.',
+        'This ability functions as invisibility. Using this ability uses up 1 ki point.',
+      ],
+    },
+    {
+      name: 'flurry of stars',
+      type: 'Ex',
+      header: 'Flurry of Stars Trick (Ex) (1 ki point)',
+      description: [
+        'A ninja with this ability can expend 1 ki point from her ki pool and use 3 actions to attack with many shuriken.',
+        'During that attack, she can throw two additional shuriken at her highest attack bonus, but all of her shuriken attacks are made at a –2 penalty, including the two extra attacks.',
       ],
     },
   ]);
@@ -843,6 +948,7 @@ const character = computed(() => {
     mythicPath,
     // mythicAbilities,
     modifiers,
+    attackCount,
   };
 });
 

@@ -1,9 +1,9 @@
 <template>
-  <BaseSheet :character="gub"/>
+  <BaseSheet3 :character="gub"/>
 </template>
 
 <script setup>
-import BaseSheet from 'components/BaseSheet';
+import BaseSheet3 from 'components/BaseSheet';
 import { reactive } from 'vue';
 
 const gub = reactive({
@@ -117,6 +117,7 @@ const gub = reactive({
 
       },
       casterLevel: 11,
+      castingStat: 'intelligence',
       casting: 'prepared',
     }],
     alignment: 'N',

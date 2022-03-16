@@ -158,8 +158,8 @@ const character = computed(() => {
             slots: 2,
             prepared: [
               'Heroism, Greater',
-              '???',
-              '???',
+              'Foe to Friend',
+              'Persistant Image',
             ],
           },
           '4th': {
@@ -190,7 +190,7 @@ const character = computed(() => {
             slots: 5,
             prepared: [
               '???',
-              '???',
+              'Cacophonous Call',
               'Gallant Inspiration',
               'Blur',
               'Invisibility',
@@ -269,7 +269,7 @@ const character = computed(() => {
           '7th': {
             slots: 5,
             prepared: [
-              '???',
+              'Hymn of Peace',
             ],
           },
           '6th': {
@@ -277,7 +277,7 @@ const character = computed(() => {
             prepared: [
               'Heal',
               'Dispel Magic, Greater',
-              '???',
+              'Harm',
             ],
           },
           '5th': {
@@ -287,7 +287,7 @@ const character = computed(() => {
               'Plane Shift',
               'Commune',
               'Flame Strike',
-              '???',
+              'Soulswitch',
             ],
           },
           '4th': {

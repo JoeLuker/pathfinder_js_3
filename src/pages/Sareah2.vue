@@ -162,7 +162,7 @@ const character = computed(() => {
       {
         archetype: ['ley-line gaurdian'],
         name: 'witch',
-        level: 11,
+        level: 12,
         hitDie: 6,
         bab: 1 / 2,
         first: true,
@@ -180,15 +180,22 @@ const character = computed(() => {
           reflex: false,
           will: true,
         },
-        casterLevel: 11,
+        casterLevel: 12,
         casting: 'spontanious',
         castingStat: 'intelligence',
         spells: {
+          '6th': {
+            slots: 3,
+            prepared: [
+              'wither limb',
+            ],
+          },
           '5th': {
-            slots: 4,
+            slots: 5,
             prepared: [
               'hold monster',
               'teleport',
+              'blood boil',
             ],
           },
           '4th': {
@@ -258,6 +265,7 @@ const character = computed(() => {
           '3rd': 'major image',
           '4th': 'hallucinatory terrain',
           '5th': 'mirage arcana',
+          '6th': 'mislead',
 
         },
       }],
@@ -280,7 +288,7 @@ const character = computed(() => {
   ));
   // TODO
   const defense = {
-    defensiveAbilities: ['hard to kill'],
+    defensiveAbilities: '',
     dr: '',
     resist: '',
     sr: '',
@@ -445,7 +453,7 @@ const character = computed(() => {
         ability: 'intelligence',
       },
       perception: {
-        ranks: 0,
+        ranks: level.value,
         ability: 'wisdom',
       },
       perform: {
@@ -557,7 +565,7 @@ const character = computed(() => {
     {
       name: 'C-4PO\'s Skin',
       bonusType: 'naturalArmorEnhancement',
-      active: true,
+      active: false,
       duration: 0,
       bonus: {
         ac: 4,
@@ -565,24 +573,24 @@ const character = computed(() => {
       },
     },
     {
-      name: 'Gub\'s Reduce Person',
+      name: 'Reduce Person',
+      bonusType: 'size',
+      active: false,
+      duration: 1,
+      bonus: {
+        strength: -2,
+        dexterity: 2,
+        size: 1,
+      },
+    },
+    {
+      name: 'Monstrous Physique II',
       bonusType: 'size',
       active: false,
       duration: 1,
       bonus: {
         strength: -2,
         dexterity: 4,
-        size: 1,
-      },
-    },
-    {
-      name: 'Gub\'s Monstrous Physique II',
-      bonusType: 'size',
-      active: false,
-      duration: 1,
-      bonus: {
-        strength: -2,
-        dexterity: 6,
         size: 2,
         ac: 1,
         ffAC: 1,
@@ -600,7 +608,7 @@ const character = computed(() => {
     levelUp: {
       bonusType: '',
       bonus: {
-        intelligence: 2,
+        intelligence: 3,
       },
     },
   });
@@ -1080,7 +1088,7 @@ const character = computed(() => {
 
   const specialAttacks = reactive([
     {
-      name: 'Witch Hexes (DC 23)',
+      name: 'Witch Hexes (DC 25)',
       hexes: [
         'cackle',
         'misfortune',
@@ -1088,7 +1096,8 @@ const character = computed(() => {
         'slumber',
         'flight',
         'gift of consumption',
-        'major ???',
+        'retribution',
+        'agony',
       ],
     },
     {

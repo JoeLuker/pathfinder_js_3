@@ -56,7 +56,8 @@ const character = computed(() => {
     {
       name: 'Great Club',
       weaponGroup: 'one handed',
-      dieCount: 1,
+      damage: -6,
+      dieCount: 2,
       dieSize: 12,
       critRange: 20,
       critMult: 3,
@@ -76,12 +77,12 @@ const character = computed(() => {
     'Chain Shirt': {
       price: 100,
       weight: 25,
-      group: 'light',
+      group: 'medium',
       bonusType: 'armor',
       bonus: {
-        ac: 4,
-        ffAC: 4,
-        acp: -2,
+        ac: 6,
+        ffAC: 6,
+        acp: -3,
         maxDex: 4,
       },
     },
@@ -96,7 +97,7 @@ const character = computed(() => {
       {
         name: 'fighter',
         archetype: ['high gaurdian'],
-        level: 1,
+        level: 4,
         hitDie: 10,
         bab: 1,
         first: true,
@@ -107,7 +108,7 @@ const character = computed(() => {
         ],
         favored: {
           hp: 0,
-          skill: 1,
+          skill: 2,
           race: {
             human: 0,
           },
@@ -139,7 +140,7 @@ const character = computed(() => {
   ));
   // TODO
   const defense = {
-    defensiveAbilities: '',
+    defensiveAbilities: `+${Math.max(Math.floor(((level.value - 2) / 4) + 1), 1)} on Will saves against compulsion`,
     dr: '',
     resist: '',
     sr: '',
@@ -190,6 +191,22 @@ const character = computed(() => {
           influence: 4,
         },
       },
+      'Weapon Focus': {
+        bonusType: '',
+        bonus: {
+          attackRolls: 1,
+        },
+      },
+      'Weapon Specialization': {
+        bonusType: '',
+        bonus: {
+          weaponDamage: 2,
+        },
+      },
+      Outflank: {
+        bonusType: '',
+        bonus: {},
+      },
     },
     skills: {
       acrobatics: {
@@ -225,7 +242,7 @@ const character = computed(() => {
         ability: 'intelligence',
       },
       society: {
-        ranks: 0,
+        ranks: level.value,
         ability: 'intelligence',
       },
       spellcraft: {
@@ -279,7 +296,7 @@ const character = computed(() => {
       duration: 2,
       active: true,
       bonus: {
-        // TODO
+        // TODO strength / 2
         weaponDamage: Math.floor(4 / 2),
       },
     },
@@ -306,8 +323,8 @@ const character = computed(() => {
     abpWeapon: {
       bonusType: 'enhancement',
       bonus: {
-        attackRolls: 0,
-        weaponDamage: 0,
+        attackRolls: 1,
+        weaponDamage: 1,
       },
     },
     abpAbilityScores: {
@@ -316,7 +333,7 @@ const character = computed(() => {
         strength: 0,
         dexterity: 0,
         constitution: 0,
-        intelligence: 0,
+        intelligence: 2,
         wisdom: 0,
         charisma: 0,
       },
@@ -337,9 +354,9 @@ const character = computed(() => {
     abpDeflection: {
       bonusType: 'deflection',
       bonus: {
-        ac: 0,
-        ffAC: 0,
-        touchAC: 0,
+        ac: 1,
+        ffAC: 1,
+        touchAC: 1,
       },
     },
     abpShield: {
@@ -353,8 +370,14 @@ const character = computed(() => {
     abpArmor: {
       bonusType: 'armorEnhancement',
       bonus: {
-        ac: 0,
-        ffAC: 0,
+        ac: 1,
+        ffAC: 1,
+      },
+    },
+    levelUp: {
+      bonusType: 'inherent',
+      bonus: {
+        constitution: 1,
       },
     },
   });
@@ -742,7 +765,7 @@ const character = computed(() => {
           option.value[rangedAttr] = rangedOption[rangedAttr];
         });
       option.value.attack += tempRangedAttack.value;
-      option.value.damage += tempRangedDamage.value;
+      option.value.damage += tempRangedDamage.value + rangedOption.weaponDamage.value;
       option.value.dieSize -= dieSizeMod.value;
       rOptions.value.push(option.value);
     });
@@ -753,10 +776,62 @@ const character = computed(() => {
   const specialAttacks = '';
 
   const featDescriptions = ref([
-
+    {
+      name: 'bodygaurd',
+      type: 'combat',
+      header: 'Bodygaurd',
+      description: [
+        'When an adjacent ally is attacked, you may use an attack of opportunity to attempt the aid another action to improve your ally’s AC. You may not use the aid another action to improve your ally’s attack roll with this attack.',
+      ],
+    },
+    {
+      name: 'in harm\'s way',
+      type: 'combat',
+      header: 'In Harm\'s Way',
+      description: [
+        'While using the aid another action to improve an adjacent ally’s AC, you can intercept a successful attack against that ally as an immediate action, taking full damage from that attack and any associated effects (bleed, poison, etc.).',
+        'A creature cannot benefit from this feat more than once per attack.',
+      ],
+    },
   ]);
 
   const specialAbilities = ref([
+    {
+      name: 'obligation',
+      type: 'Ex',
+      header: 'Obligation (Ex)',
+      description: [
+        'At 1st level, a high guardian can spend 1 minute of focused concentration each day to select a single ally as his obligation, vowing to keep that person alive for that day. Once he has chosen, he can’t change his obligation until the following day.',
+        'If his obligation dies, the high guardian must atone for 1 week before he can select another obligation.',
+      ],
+    },
+    {
+      name: 'right hand',
+      type: 'Ex',
+      header: 'Right Hand (Ex)',
+      description: [
+        'At 1st level, a high guardian can take a 5-foot step as an immediate action, as long as he ends this movement adjacent to his obligation. If he takes this step, he cannot take a 5-foot step during his next turn and his total movement is reduced by 5 feet during his next turn.',
+        'This ability replaces the bonus feat gained at 1st level.',
+      ],
+    },
+    {
+      name: 'defender’s reflexes',
+      type: 'Ex',
+      header: 'Defender’s Reflexes (Ex)',
+      description: [
+        'At 2nd level, a high guardian gains Combat Reflexes as a bonus feat, and he can use his Strength modifier instead of his Dexterity modifier to determine the number of additional attacks of opportunity he can make per round. If he already has Combat Reflexes, he instead gains Stand Still as a bonus feat.',
+        'This ability replaces the bonus feat gained at 2nd level.',
+      ],
+    },
+    {
+      name: 'unassailable allegiance',
+      type: 'Ex',
+      header: 'Unassailable Allegiance (Ex)',
+      description: [
+        'At 2nd level, a high guardian gains a +1 bonus on Will saves against compulsion spells and effects. This bonus increases by 1 for every 4 fighter levels beyond 2nd.',
+        'This ability replaces bravery.',
+      ],
+    },
   ]);
 
   return {
