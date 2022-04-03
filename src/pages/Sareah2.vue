@@ -162,7 +162,7 @@ const character = computed(() => {
       {
         archetype: ['ley-line gaurdian'],
         name: 'witch',
-        level: 12,
+        level: 13,
         hitDie: 6,
         bab: 1 / 2,
         first: true,
@@ -180,22 +180,25 @@ const character = computed(() => {
           reflex: false,
           will: true,
         },
-        casterLevel: 12,
+        casterLevel: 13,
         casting: 'spontanious',
         castingStat: 'intelligence',
         spells: {
           '6th': {
-            slots: 3,
+            slots: 4,
             prepared: [
               'wither limb',
+              'fey form II',
             ],
           },
           '5th': {
-            slots: 5,
+            slots: 6,
             prepared: [
               'hold monster',
               'teleport',
-              'blood boil',
+              'major curse',
+              'banish seeming',
+              'waves of fatigue',
             ],
           },
           '4th': {
@@ -205,6 +208,7 @@ const character = computed(() => {
               'confusion',
               'demanding message',
               'hunger of flesh',
+              'inveigle person',
             ],
           },
           '3rd': {
@@ -352,6 +356,7 @@ const character = computed(() => {
       'Extra Hex (Flight)': {},
       'Split Hex': {},
       'spell penetration': {},
+      'greater spell penetration': {},
     },
     skills: {
       acrobatics: {
@@ -596,6 +601,16 @@ const character = computed(() => {
         ffAC: 1,
       },
     },
+    {
+      name: 'Fey Form II',
+      bonusType: 'size',
+      active: false,
+      duration: 1,
+      bonus: {
+        strength: -2,
+        dexterity: 6,
+      },
+    },
   ]);
 
   const charMods = reactive({
@@ -609,6 +624,13 @@ const character = computed(() => {
       bonusType: '',
       bonus: {
         intelligence: 3,
+      },
+    },
+    Wish: {
+      bonusType: 'inherent',
+      cost: 0,
+      bonus: {
+        intelligence: 1,
       },
     },
   });
