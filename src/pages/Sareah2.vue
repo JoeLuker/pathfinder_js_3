@@ -7,9 +7,14 @@
 <script setup>
 import BaseSheet3 from 'components/BaseSheet3';
 import {
-  computed, ref, reactive,
+  computed,
+  reactive,
+  ref,
+  defineExpose,
 } from 'vue';
-import { useMeta } from 'quasar';
+import {
+  useMeta,
+} from 'quasar';
 
 const sizeTable = reactive({
   fine: 8,
@@ -57,7 +62,11 @@ const character = computed(() => {
   ]);
   const type = ref('humanoid');
   const subtype = ref(['human']);
-  const senses = ref('');
+  const senses = ref([
+    'arcane sight',
+    'darkvision 60 ft.',
+    'see invisibility',
+  ]);
   const aura = ref('');
   const speed = ref(30);
 
@@ -152,6 +161,9 @@ const character = computed(() => {
       },
     },
   });
+
+  const charLevel = ref(13);
+
   const introduction = {
     name: name.value,
     solo: solo.value,
@@ -162,7 +174,7 @@ const character = computed(() => {
       {
         archetype: ['ley-line gaurdian'],
         name: 'witch',
-        level: 13,
+        level: charLevel.value,
         hitDie: 6,
         bab: 1 / 2,
         first: true,
@@ -172,7 +184,7 @@ const character = computed(() => {
           hp: 4,
           skill: 0,
           race: {
-            'half-elf': 7,
+            'half-elf': charLevel.value - 4,
           },
         },
         saves: {
@@ -180,8 +192,8 @@ const character = computed(() => {
           reflex: false,
           will: true,
         },
-        casterLevel: 13,
-        casting: 'spontanious',
+        casterLevel: charLevel.value,
+        casting: 'spontaneous',
         castingStat: 'intelligence',
         spells: {
           '6th': {
@@ -196,7 +208,7 @@ const character = computed(() => {
             prepared: [
               'hold monster',
               'teleport',
-              'major curse',
+              'Curse, Major',
               'banish seeming',
               'waves of fatigue',
             ],
@@ -207,7 +219,7 @@ const character = computed(() => {
               'enervation',
               'confusion',
               'demanding message',
-              'hunger of flesh',
+              'hunger for flesh',
               'inveigle person',
             ],
           },
@@ -1091,8 +1103,8 @@ const character = computed(() => {
   const heroPointAbilities = ref('');
   const mythicAbilities = ref('');
 
-  // const hexDC = computed(() => 10 + Math.floor(level.value / 2)
-  //   + abilityMods.value.intelligence);
+  const hexDC = computed(() => 10 + Math.floor(level.value / 2)
+    + abilityMods.value.intelligence);
 
   const specialAbilities = ref([
     {
@@ -1161,6 +1173,7 @@ const character = computed(() => {
     heroPointAbilities,
     mythicAbilities,
     specialAttacks,
+    hexDC,
   };
 });
 
@@ -1171,9 +1184,11 @@ const metaData = reactive({
 });
 useMeta(metaData);
 
+defineExpose({ sareah });
+
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 
 #page {
   text-shadow: 2px 2px 4px #000000;

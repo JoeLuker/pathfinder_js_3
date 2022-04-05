@@ -3,61 +3,69 @@
   <div v-show="caster.spells">
     <q-card-section>
 
-    <q-expansion-item id="offense"
-                      style="padding: 0"
-                      expand-separator
-                      default-opened
-                      dense
-                      header-class="bg-primary text-white"
-                      :label="`${caster.name} Spells ${spellStyle}
+      <q-expansion-item id="offense"
+                        :label="`${caster.name} Spells ${spellStyle}
                       (CL ${caster.casterLevel};
-                       Concentration +${caster.casterLevel + castingMod})`">
+                       Concentration +${caster.casterLevel + castingMod})`"
+                        default-opened
+                        dense
+                        expand-separator
+                        header-class="bg-primary text-white"
+                        style="padding: 0">
 
-      <div class="spells" v-for="(spellList, level) in caster.spells"
-           v-bind:key="level">
+        <div v-for="(spellList, level) in caster.spells" v-bind:key="level"
+             class="spells">
 
-        <div v-show="toggleKey">
-          <b>
-            {{ level }}
-            <span v-if="level !== 'Cantrips' && level !== 'Orisons'">
-              ({{ spellList.slots + Math.floor((castingMod-spellLevel[level])/4 + 1) }}/day)
+          <div v-show="toggleKey">
+            <b>
+              {{ level }}
+              <span v-if="level !== 'Cantrips' && level !== 'Orisons'">
+              ({{ spellList.slots + Math.floor((castingMod - spellLevel[level]) / 4 + 1) }}/day)
             </span>
-            <span v-text="` (DC ${10 + castingMod + spellLevel[level]})`"/>
-            <span v-text="` (+${castingMod + spellLevel[level]})`"/>
+              <span v-text="` (DC ${10 + castingMod + spellLevel[level]})`"/>
+              <span v-text="` (+${castingMod + spellLevel[level]})`"/>
 
-          </b>
-          <span v-text="'&nbsp;'"/>
-          <span>—</span>
-          <span v-text="'&nbsp;'"/>
-          <i v-for="(spell, index) in spellList.prepared" v-bind:key="index">
-          <span v-bind:style="{ color: fuck}"
-                v-on:click="emit('spellSubmit', spell)">{{ spell }}</span>
+            </b>
+            <span v-text="'&nbsp;'"/>
+            <span>—</span>
+            <span v-text="'&nbsp;'"/>
+            <i v-for="(spell, index) in spellList.prepared" v-bind:key="index">
+          <span class="spell"
+                v-bind:class="{ active: spell === activeSpell }"
+                v-on:click="emit('spellSubmit', spell);
+                activeSpell = spell; ">{{ spell }}</span>
 
-            <span v-if="index !== spellList.prepared.length - 1">, </span>
+              <span v-if="index !== spellList.prepared.length - 1">, </span>
 
-          </i>
+            </i>
 
-          <span v-if="typeof caster.patronSpells !== 'undefined'">
-        <i class="patron" v-show="caster.patronSpells[level]"> :
-          <span @click="emit('spellSubmit', caster.patronSpells[level])">
+            <span v-if="typeof caster.patronSpells !== 'undefined'">
+        <i v-show="caster.patronSpells[level]" class="patron"> :
+          <span class="spell"
+                v-bind:class="{ active: caster.patronSpells[level] === activeSpell }"
+                v-on:click="emit('spellSubmit', caster.patronSpells[level]);
+                activeSpell = caster.patronSpells[level];">
             {{ caster.patronSpells[level] }}
           </span>
         </i>
         </span>
-          <span v-if="typeof caster.mysterySpells !== 'undefined'">
-        <i v-for="(mystery, index) in caster.mysterySpells" class="mystery"
-           v-show="mystery[level]"
-           :key="index"> :
-          <span @click="emit('spellSubmit', mystery[level])">
+            <span v-if="typeof caster.mysterySpells !== 'undefined'">
+        <i v-for="(mystery, index) in caster.mysterySpells" v-show="mystery[level]"
+           :key="index"
+           class="mystery"> :
+          <span class="spell"
+                v-bind:class="{ active: mystery[level] === activeSpell }"
+                v-on:click="emit('spellSubmit', mystery[level]);
+                activeSpell = mystery[level];">
             {{ mystery[level] }}
           </span>
         </i>
         </span>
+          </div>
+
         </div>
 
-      </div>
-
-    </q-expansion-item>
+      </q-expansion-item>
     </q-card-section>
 
   </div>
@@ -66,18 +74,21 @@
 
 <script setup>
 import {
-  defineProps,
-  defineEmits,
-  ref,
-  reactive,
   computed,
+  defineEmits,
+  defineProps,
+  reactive,
+  ref,
 } from 'vue';
-import { useQuasar } from 'quasar';
-import { api } from 'boot/axios';
+import {
+  useQuasar,
+} from 'quasar';
+import {
+  api,
+} from 'boot/axios';
 
 const $q = useQuasar();
 const toggleKey = ref(true);
-const fuck = ref('white');
 
 const props = defineProps({
   caster: Object,
@@ -85,6 +96,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['spellSubmit']);
+
+const activeSpell = ref('');
 
 const spellColorList = ref([]);
 
@@ -143,6 +156,20 @@ spellColor()
 
 .mystery {
   color: #cdaeff;
+}
+
+.spell {
+  cursor: pointer;
+  border-bottom: 2px solid #fff3;
+}
+
+.spell:hover {
+  border-bottom-color: #fff9;
+}
+
+.active {
+  border-bottom-color: #fff9;
+  font-weight: bold;
 }
 
 </style>

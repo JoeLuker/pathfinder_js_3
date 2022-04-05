@@ -28,10 +28,10 @@ const routes = [
     ],
   },
   {
-    path: '/Immogen',
+    path: '/SareahM',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Immogen.vue') },
+      { path: '', component: () => import('pages/Sareah.vue') },
     ],
   },
   {

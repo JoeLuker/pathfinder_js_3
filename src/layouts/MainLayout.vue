@@ -78,6 +78,11 @@ const linksList = [
     link: '/#/Sareah',
   },
   {
+    title: 'Sareah Mobile',
+    icon: 'school',
+    link: '/#/SareahM',
+  },
+  {
     title: 'Gub',
     icon: 'search',
     link: '/#/Gub',

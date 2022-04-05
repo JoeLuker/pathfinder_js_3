@@ -27,7 +27,10 @@ module.exports = {
     // 'plugin:vue/vue3-strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
     // 'plugin:vue/vue3-recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
 
-    'airbnb-base'
+    'airbnb-base',
+    'plugin:quasar/legacy',
+    'plugin:quasar/standard'
+
 
   ],
 
@@ -35,6 +38,7 @@ module.exports = {
     // https://eslint.vuejs.org/user-guide/#why-doesn-t-it-work-on-vue-file
     // required to lint *.vue files
     'vue',
+    'quasar',
 
   ],
 
@@ -68,6 +72,14 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
     'import/prefer-default-export': 'off',
     'prefer-promise-reject-errors': 'off',
+
+    'quasar/no-legacy-components': 'error',
+    'quasar/no-legacy-css': 'error',
+    'quasar/no-legacy-directives': 'error',
+    'quasar/no-legacy-properties': 'error',
+    'quasar/no-legacy-plugins': 'error',
+    'quasar/no-invalid-props': 'error',
+    'quasar/no-invalid-qfield-usage': 'error',
 
 
     // allow debugger during development only
